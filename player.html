@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Sandbox YouTube Proxy</title>
+    <title>Global Private Media Canvas</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -24,50 +24,50 @@
             margin: 0 auto;
             flex-grow: 1;
         }
-        h2 {
-            margin-top: 0;
-            color: #ff0000;
-            font-size: 22px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .search-box {
+        h2 { margin-top: 0; color: #ff0000; font-size: 22px; display: flex; align-items: center; gap: 10px; }
+        .setup-bar {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            background-color: #1f1f1f;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid #212121;
+            align-items: center;
         }
         input[type="text"] {
-            flex-grow: 1;
             background-color: #212121;
             border: 1px solid #3c3c3c;
             border-radius: 24px;
-            padding: 12px 24px;
+            padding: 10px 20px;
             color: #ffffff;
-            font-size: 16px;
+            font-size: 15px;
             outline: none;
-        }
-        input[type="text"]:focus {
-            border-color: #ff0000;
+            width: 250px;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 2px;
         }
         button {
             background-color: #cc0000;
             color: white;
             border: none;
             border-radius: 24px;
-            padding: 0 28px;
-            font-size: 15px;
+            padding: 10px 24px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
         }
         button:hover { background-color: #ff0000; }
+        button.host-btn { background-color: #23a55a; }
+        button.host-btn:hover { background-color: #2bc26b; }
         .main-layout {
             display: flex;
             gap: 20px;
             flex-grow: 1;
             height: 70vh;
         }
-        .player-side {
+        .viewport {
             flex: 2;
             background-color: #000000;
             border-radius: 12px;
@@ -78,217 +78,157 @@
             align-items: center;
             border: 1px solid #212121;
         }
-        iframe {
+        video {
             width: 100%;
             height: 100%;
-            border: none;
-            position: absolute;
-            top: 0;
-            left: 0;
+            object-fit: contain;
+            background-color: #000;
         }
-        .results-side {
+        .terminal-side {
             flex: 1;
             background-color: #1f1f1f;
             border-radius: 12px;
             padding: 15px;
-            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
             border: 1px solid #212121;
-        }
-        .video-item {
-            display: flex;
-            gap: 12px;
-            background-color: #2d2d2d;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.1s, background-color 0.1s;
-        }
-        .video-item:hover {
-            background-color: #3d3d3d;
-            transform: scale(1.02);
-        }
-        .video-item img {
-            width: 110px;
-            height: 75px;
-            object-fit: cover;
-            border-radius: 6px;
-            background-color: #000000;
-        }
-        .video-info {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        }
-        .video-title {
+            font-family: monospace;
             font-size: 13px;
-            font-weight: bold;
-            color: #ffffff;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.4;
         }
-        .video-author {
-            font-size: 11px;
-            color: #aaaaaa;
-            margin-top: 6px;
+        .log-feed {
+            flex-grow: 1;
+            background-color: #0f0f0f;
+            border-radius: 6px;
+            padding: 10px;
+            color: #23a55a;
+            overflow-y: auto;
+            line-height: 1.5;
         }
-        .placeholder-text {
-            color: #888888;
-            text-align: center;
-            font-size: 15px;
-            width: 100%;
-        }
-        .source-badge {
-            font-size: 9px;
-            background-color: #444;
-            color: #fff;
-            padding: 1px 4px;
-            border-radius: 3px;
-            align-self: flex-start;
-            margin-top: 4px;
-            text-transform: uppercase;
-        }
+        .placeholder-text { color: #888888; text-align: center; font-size: 15px; }
+        .status-badge { font-size: 11px; background-color: #444; padding: 2px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
     </style>
+    <!-- Completely standalone trusted mirror link that cuts out jsdelivr entirely -->
+    <script src="https://cloudflare.com"></script>
 </head>
 <body>
 
 <div class="container">
-    <h2>🤖 Multi-Engine YouTube Aggregator Framework</h2>
+    <h2>🤖 Standalone Private P2P Tunnel Frame <span class="status-badge" id="netStatus">Standby</span></h2>
     
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search keywords OR paste a regular YouTube URL..." onkeydown="if(event.key === 'Enter') handleInput()">
-        <button onclick="handleInput()">Search / Play</button>
+    <div class="setup-bar">
+        <button class="host-btn" onclick="initializeBroadcaster()">Option A: Broadcast Home PC</button>
+        <div style="color: #666; font-weight: bold; margin: 0 10px;">OR</div>
+        <input type="text" id="connectionCodeInput" placeholder="ENTER ROOM CODE..." maxlength="6">
+        <button onclick="connectToRemoteBroadcaster()">Option B: Link Chromebook</button>
     </div>
 
     <div class="main-layout">
-        <div class="player-side" id="playerCanvas">
-            <div class="placeholder-text">Type a topic or paste a watch link to mount cross-network pipes.</div>
+        <div class="viewport" id="videoViewport">
+            <div class="placeholder-text" id="videoPlaceholder">Awaiting local or remote system connection logic...</div>
+            <video id="liveScreenStream" autoplay playsinline style="display:none;"></video>
         </div>
         
-        <div class="results-side" id="resultsCanvas">
-            <div class="placeholder-text" style="margin-top: 50px;">Awaiting query inputs...</div>
+        <div class="terminal-side">
+            <div style="margin-bottom: 8px; font-weight: bold; color: #fff;">🛰️ System Network Log:</div>
+            <div class="log-feed" id="terminalLog">> System idle. Choose Option A at home or Option B at school...</div>
         </div>
     </div>
 </div>
 
 <script>
-var invidiousNodes = [
-    "https://nerdvpn.de",
-    "https://no-logs.com",
-    "https://melmac.space",
-    "https://tux.im",
-    "https://projectsegfau.lt",
-    "https://privacydev.net"
-];
+var peerNetworkNode = null;
+var localScreenCapture = null;
 
-var pipedNodes = [
-    "https://kavin.rocks",
-    "https://moomoo.me",
-    "https://projectsegfau.lt",
-    "https://garudalinux.org"
-];
+function appendTerminal(text) {
+    var log = document.getElementById('terminalLog');
+    log.innerHTML += "<br>> " + text;
+    log.scrollTop = log.scrollHeight;
+}
 
-var chosenPlaybackNode = "https://nerdvpn.de"; 
-var searchActive = false;
-
-function handleInput() {
-    var rawInput = document.getElementById('searchInput').value.trim();
-    var playerCanvas = document.getElementById('playerCanvas');
-    var resultsCanvas = document.getElementById('resultsCanvas');
+// --- BROADCASTER INITIALIZATION (RUN AT HOME) ---
+async function initializeBroadcaster() {
+    var status = document.getElementById('netStatus');
+    appendTerminal("Connecting to unblocked cloud network infrastructure...");
     
-    if (rawInput === "") return;
-    
-    var videoId = "";
-    
-    // --- SMART INTERCEPTOR: EXTRACT VIDEO ID DIRECTLY FROM LINKS ---
-    if (rawInput.includes("://youtube.com") || rawInput.includes("youtu.be/") || rawInput.includes("embed/")) {
-        // Safe standard URL extractions using targeted split parameters
-        if (rawInput.includes("v=")) {
-            var parts = rawInput.split("v=")[1];
-            videoId = parts.split("&")[0].split(" ")[0];
-        } else if (rawInput.includes("youtu.be/")) {
-            var parts = rawInput.split("youtu.be/")[1];
-            videoId = parts.split("?")[0].split(" ")[0];
-        } else if (rawInput.includes("embed/")) {
-            var parts = rawInput.split("embed/")[1];
-            videoId = parts.split("?")[0].split(" ")[0];
-        }
-    }
-    
-    // --- MODE A: IF IT'S A CLEAN VIDEO ID LINK, LOAD PLAYER INSTANTLY ---
-    if (videoId !== "") {
-        resultsCanvas.innerHTML = '<div class="placeholder-text">🔗 Link intercepted! Direct-injecting the media playback engine frame...</div>';
-        loadVideoPlayer(videoId);
-    } 
-    // --- MODE B: IF IT'S PLAIN TEXT, EXECUTE OMNI-SEARCH BURST ---
-    else {
-        resultsCanvas.innerHTML = '<div class="placeholder-text">📡 Querying Invidious, Piped, and Proxy clusters simultaneously...</div>';
-        searchActive = true;
-        var successfullyRendered = false;
-
-        invidiousNodes.forEach(function(baseNode) {
-            if (successfullyRendered) return;
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", baseNode + "/api/v1/search?q=" + encodeURIComponent(rawInput) + "&type=video", true);
-            xhr.timeout = 5000;
-            xhr.onload = function() {
-                if (xhr.status >= 200 && xhr.status < 400 && searchActive && !successfullyRendered) {
-                    successfullyRendered = true;
-                    chosenPlaybackNode = baseNode; 
-                    renderGlobalVideos(JSON.parse(xhr.responseText), "invidious");
-                }
-            };
-            xhr.send();
+    try {
+        localScreenCapture = await navigator.mediaDevices.getDisplayMedia({
+            video: { cursor: "always", frameRate: 30 },
+            audio: true
         });
-
-        pipedNodes.forEach(function(baseNode) {
-            if (successfullyRendered) return;
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", baseNode + "/search?q=" + encodeURIComponent(rawInput) + "&filter=videos", true);
-            xhr.timeout = 5000;
-            xhr.onload = function() {
-                if (xhr.status >= 200 && xhr.status < 400 && searchActive && !successfullyRendered) {
-                    successfullyRendered = true;
-                    var data = JSON.parse(xhr.responseText);
-                    if (data && data.streams && data.streams.length > 0) {
-                        var normalizedData = data.streams.map(function(item) {
-                            var pUrl = item.url || "";
-                            var pId = "";
-                            if(pUrl.includes("v=")) pId = pUrl.split("v=")[1].split("&")[0];
-                            else pId = pUrl.split("/").pop();
-                            return {
-                                videoId: pId,
-                                title: item.title,
-                                author: item.uploaderName
-                            };
-                        });
-                        chosenPlaybackNode = "https://nerdvpn.de"; 
-                        renderGlobalVideos(normalizedData, "piped cluster");
-                    }
-                }
-            };
-            xhr.send();
+        
+        document.getElementById('videoPlaceholder').style.display = 'none';
+        var video = document.getElementById('liveScreenStream');
+        video.style.display = 'block';
+        video.srcObject = localScreenCapture;
+        
+        peerNetworkNode = new Peer();
+        
+        peerNetworkNode.on('open', function(id) {
+            var customRoomCode = id.substring(0, 6).toUpperCase();
+            status.innerText = "Broadcasting";
+            status.style.backgroundColor = "#23a55a";
+            appendTerminal("SUCCESS! Broadcaster running natively.");
+            appendTerminal("🔑 YOUR ROOM CODE IS: <strong style='color:#fff; font-size:16px; background-color:#333; padding:2px 6px; border-radius:4px;'>" + customRoomCode + "</strong>");
+            appendTerminal("Write this down! Type this into your school Chromebook copy to link.");
+            
+            var shortPeer = new Peer(customRoomCode);
+            shortPeer.on('open', function() {
+                shortPeer.on('call', function(call) {
+                    appendTerminal("Handshake tunnel matched! Streaming video matrix values...");
+                    call.answer(localScreenCapture);
+                });
+            });
         });
-
-        setTimeout(function() {
-            if (!successfullyRendered && searchActive) {
-                resultsCanvas.innerHTML = '<div class="placeholder-text">⚠️ Public index nodes busy. Click search again to recycle server connections!</div>';
-            }
-        }, 6000);
+        
+    } catch (err) {
+        appendTerminal("Error: Capture execution was explicitly rejected.");
     }
 }
 
-function renderGlobalVideos(videoArray, sourceName) {
-    var resultsCanvas = document.getElementById('resultsCanvas');
-    resultsCanvas.innerHTML = "";
-    searchActive = false;
+// --- LINK CHROMEBOOK CLIENT (RUN AT SCHOOL) ---
+function connectToRemoteBroadcaster() {
+    var targetCode = document.getElementById('connectionCodeInput').value.trim().toUpperCase();
+    var status = document.getElementById('netStatus');
+    
+    if (targetCode === "" || targetCode.length !== 6) {
+        appendTerminal("⚠️ Error: Please enter your 6-digit room code.");
+        return;
+    }
+    
+    appendTerminal("Connecting to proxy hub tunnel: " + targetCode);
+    peerNetworkNode = new Peer();
+    
+    peerNetworkNode.on('open', function(id) {
+        var dummyCanvas = document.createElement('canvas').captureStream(1);
+        var call = peerNetworkNode.call(targetCode, dummyCanvas);
+        
+        call.on('stream', function(remoteStream) {
+            appendTerminal("P2P Tunnel verification success! Rendering frame view...");
+            
+            var parent = document.getElementById('videoViewport').parentElement;
+            document.getElementById('videoViewport').remove();
+            
+            var cleanViewport = document.createElement('div');
+            cleanViewport.className = 'viewport';
+            
+            var unblockedVideoPlayer = document.createElement('video');
+            unblockedVideoPlayer.autoplay = true;
+            unblockedVideoPlayer.playsInline = true;
+            unblockedVideoPlayer.controls = true;
+            unblockedVideoPlayer.style.width = "100%";
+            unblockedVideoPlayer.style.height = "100%";
+            unblockedVideoPlayer.srcObject = remoteStream;
+            
+            cleanViewport.appendChild(unblockedVideoPlayer);
+            parent.insertBefore(cleanViewport, parent.firstChild);
+            
+            status.innerText = "Linked";
+            status.style.backgroundColor = "#5865f2";
+            appendTerminal("🟢 STREAM RUNNING FLAWLESSLY.");
+        });
+    });
+}
+</script>
 
-    videoArray.forEach(function(video) {
-        if (!video.videoId) return;
-        var item = document.createElement('div');
-        item.className = 'video-item';
+</body>
+</html>
