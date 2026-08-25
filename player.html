@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serverless P2P Screen Tunnel</title>
+    <title>Global Private Media Canvas</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #0f0f0f;
             color: #f1f1f1;
             margin: 0;
@@ -24,7 +24,7 @@
             margin: 0 auto;
             flex-grow: 1;
         }
-        h2 { margin-top: 0; color: #ff0000; font-size: 22px; }
+        h2 { margin-top: 0; color: #ff0000; font-size: 22px; display: flex; align-items: center; gap: 10px; }
         .setup-bar {
             display: flex;
             gap: 10px;
@@ -33,22 +33,21 @@
             padding: 12px 20px;
             border-radius: 12px;
             border: 1px solid #212121;
+            align-items: center;
         }
-        textarea {
+        input[type="text"] {
             background-color: #212121;
             border: 1px solid #3c3c3c;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 24px;
+            padding: 10px 20px;
             color: #ffffff;
-            font-family: monospace;
-            font-size: 11px;
-            resize: none;
-            width: 100%;
-            height: 80px;
-            margin-bottom: 10px;
+            font-size: 15px;
             outline: none;
+            width: 250px;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 2px;
         }
-        textarea:focus { border-color: #ff0000; }
         button {
             background-color: #cc0000;
             color: white;
@@ -58,7 +57,6 @@
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            white-space: nowrap;
         }
         button:hover { background-color: #ff0000; }
         button.host-btn { background-color: #23a55a; }
@@ -67,7 +65,7 @@
             display: flex;
             gap: 20px;
             flex-grow: 1;
-            height: 60vh;
+            height: 70vh;
         }
         .viewport {
             flex: 2;
@@ -80,7 +78,12 @@
             align-items: center;
             border: 1px solid #212121;
         }
-        video { width: 100%; height: 100%; object-fit: contain; }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #000;
+        }
         .terminal-side {
             flex: 1;
             background-color: #1f1f1f;
@@ -99,125 +102,137 @@
             padding: 10px;
             color: #23a55a;
             overflow-y: auto;
-            line-height: 1.4;
+            line-height: 1.5;
         }
-        .placeholder-text { color: #888888; text-align: center; }
+        .placeholder-text { color: #888888; text-align: center; font-size: 15px; }
+        .status-badge { font-size: 11px; background-color: #444; padding: 2px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
     </style>
+    <script src="https://cloudflare.com"></script>
 </head>
 <body>
 
 <div class="container">
-    <h2>🤖 Serverless Private Video Signal Matrix</h2>
+    <h2>🤖 Private P2P Screen Tunnel <span class="status-badge" id="netStatus">Standby</span></h2>
     
-    <div class="setup-bar" style="flex-direction: column; gap: 5px;">
-        <div style="display:flex; gap:10px; width:100%;">
-            <button class="host-btn" onclick="startHost()">Step 1: Broadcast My Laptop</button>
-            <button onclick="acceptChromebookAnswer()">Step 4: Lock Connection</button>
-            <button onclick="startClient()" style="background-color:#5865f2;">[Chromebook Only] Step 2: Receive Feed</button>
-        </div>
-        <div style="margin-top: 10px; width:100%;">
-            <textarea id="ticketArea" placeholder="Your connection session tickets will generate here..."></textarea>
-        </div>
+    <div class="setup-bar">
+        <button class="host-btn" onclick="initializeBroadcaster()">Option A: Broadcast Home PC</button>
+        <div style="color: #666; font-weight: bold; margin: 0 10px;">OR</div>
+        <input type="text" id="connectionCodeInput" placeholder="ENTER ROOM CODE..." maxlength="6">
+        <button onclick="connectToRemoteBroadcaster()">Option B: Link Chromebook</button>
     </div>
 
     <div class="main-layout">
         <div class="viewport" id="videoViewport">
-            <div class="placeholder-text" id="videoPlaceholder">Awaiting cryptographic handshake loops...</div>
+            <div class="placeholder-text" id="videoPlaceholder">Awaiting connection logic...</div>
             <video id="liveScreenStream" autoplay playsinline style="display:none;"></video>
         </div>
         
         <div class="terminal-side">
-            <div style="margin-bottom: 8px; font-weight: bold; color: #fff;">🛰️ Local Engine Log:</div>
-            <div class="log-feed" id="terminalLog">> Engine ready. Click Step 1 to broadcast your laptop screen natively.</div>
+            <div style="margin-bottom: 8px; font-weight: bold; color: #fff;">🛰️ System Network Log:</div>
+            <div class="log-feed" id="terminalLog">> System idle. Choose Option A at home or Option B at school...</div>
         </div>
     </div>
 </div>
 
 <script>
-var p2pPipe = null;
-var localStream = null;
-var networkChannel = null;
+var peerNetworkNode = null;
+var localScreenCapture = null;
 
-function printLog(text) {
+function appendTerminal(text) {
     var log = document.getElementById('terminalLog');
     log.innerHTML += "<br>> " + text;
     log.scrollTop = log.scrollHeight;
 }
 
-// Configuration options mapping offline fallback routing arrays
-var rtcConfig = { iceServers: [{ urls: "stun:://google.com" }] };
-
-// --- STEP 1: RUN THIS AT HOME ON YOUR LAPTOP ---
-async function startHost() {
-    printLog("Requesting native screen media frame objects...");
+// --- OPTION A: INITIALIZE BROADCASTER (RUN AT HOME) ---
+async function initializeBroadcaster() {
+    var status = document.getElementById('netStatus');
+    appendTerminal("Opening browser media capture window...");
+    
     try {
-        localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        // Starts the broadcast prompt immediately before trying to contact any servers
+        localScreenCapture = await navigator.mediaDevices.getDisplayMedia({
+            video: { cursor: "always", frameRate: 30 },
+            audio: true
+        });
+        
         document.getElementById('videoPlaceholder').style.display = 'none';
         var video = document.getElementById('liveScreenStream');
         video.style.display = 'block';
-        video.srcObject = localStream;
+        video.srcObject = localScreenCapture;
+        
+        appendTerminal("Screen sharing active! Handshaking with cloud infrastructure node...");
+        
+        peerNetworkNode = new Peer();
+        
+        peerNetworkNode.on('open', function(id) {
+            var customRoomCode = id.substring(0, 6).toUpperCase();
+            status.innerText = "Broadcasting";
+            status.style.backgroundColor = "#23a55a";
+            appendTerminal("✨ <strong>BROADCASTER ONLINE.</strong>");
+            appendTerminal("🔑 YOUR ROOM CODE IS: <strong style='color:#fff; font-size:16px; background-color:#333; padding:2px 6px; border-radius:4px;'>" + customRoomCode + "</strong>");
+            appendTerminal("Type this code on your school Chromebook copy to connect.");
+            
+            var connectionBroker = new Peer(customRoomCode);
+            connectionBroker.on('open', function() {
+                connectionBroker.on('call', function(incomingCall) {
+                    appendTerminal("Chromebook connected! Streaming video matrix values...");
+                    incomingCall.answer(localScreenCapture);
+                });
+            });
+        });
 
-        p2pPipe = new RTCPeerConnection(rtcConfig);
-        networkChannel = p2pPipe.createDataChannel("chat");
-
-        localStream.getTracks().forEach(track => p2pPipe.addTrack(track, localStream));
-
-        p2pPipe.onicecandidate = e => {
-            if (!e.candidate) {
-                document.getElementById('ticketArea').value = btoa(JSON.stringify(p2pPipe.localDescription));
-                printLog("✨ SUCCESS! Copy the long text block from the box above. Text it to yourself or save it in Discord. You will need to paste this into your Chromebook tomorrow!");
-            }
-        };
-
-        var offer = await p2pPipe.createOffer();
-        await p2pPipe.setLocalDescription(offer);
+        peerNetworkNode.on('error', function(err) {
+            appendTerminal("❌ Network Hub Warning: Cloud node took too long to assign a code string.");
+        });
+        
     } catch (err) {
-        printLog("❌ Error: Permission denied or browser blocked framing.");
+        appendTerminal("❌ Error: Screen sharing request rejected or canceled.");
     }
 }
 
-// --- STEP 2 & 3: RUN THIS AT SCHOOL ON YOUR CHROMEBOOK ---
-async function startClient() {
-    var rawTicket = document.getElementById('ticketArea').value.trim();
-    if (rawTicket === "") {
-        printLog("⚠️ Error: Paste the laptop's ticket block into the textarea box first!");
+// --- OPTION B: LINK CHROMEBOOK (RUN AT SCHOOL) ---
+function connectToRemoteBroadcaster() {
+    var targetCode = document.getElementById('connectionCodeInput').value.trim().toUpperCase();
+    var status = document.getElementById('netStatus');
+    
+    if (targetCode === "" || targetCode.length !== 6) {
+        appendTerminal("⚠️ Error: Please input a valid 6-digit room code.");
         return;
     }
-
-    printLog("Parsing cryptographic laptop ticket data...");
-    p2pPipe = new RTCPeerConnection(rtcConfig);
-
-    p2pPipe.ontrack = e => {
-        printLog("🟢 Stream verified! Syncing frame layout viewport...");
-        document.getElementById('videoPlaceholder').style.display = 'none';
-        var video = document.getElementById('liveScreenStream');
-        video.style.display = 'block';
-        video.srcObject = e.streams[0];
-    };
-
-    p2pPipe.onicecandidate = e => {
-        if (!e.candidate) {
-            document.getElementById('ticketArea').value = btoa(JSON.stringify(p2pPipe.localDescription));
-            printLog("📋 Chromebook response ticket ready! Copy the text above, send it back to your laptop browser window, paste it there, and hit Step 4.");
-        }
-    };
-
-    var parsedOffer = new RTCSessionDescription(JSON.parse(atob(rawTicket)));
-    await p2pPipe.setRemoteDescription(parsedOffer);
-    var answer = await p2pPipe.createAnswer();
-    await p2pPipe.setLocalDescription(answer);
-}
-
-// --- STEP 4: RUN THIS BACK ON YOUR LAPTOP AT HOME TO LOCK IT ---
-async function acceptChromebookAnswer() {
-    var rawAnswer = document.getElementById('ticketArea').value.trim();
-    if (rawAnswer === "") {
-        printLog("⚠️ Error: Paste the Chromebook's response text block here!");
-        return;
-    }
-    var parsedAnswer = new RTCSessionDescription(JSON.parse(atob(rawAnswer)));
-    await p2pPipe.setRemoteDescription(parsedAnswer);
-    printLog("🔒 Handshake locked! Encrypted video pipeline active.");
+    
+    appendTerminal("Connecting to proxy hub node tunnel: " + targetCode);
+    peerNetworkNode = new Peer();
+    
+    peerNetworkNode.on('open', function(id) {
+        var dummyCanvas = document.createElement('canvas').captureStream(1);
+        var callPipe = peerNetworkNode.call(targetCode, dummyCanvas);
+        
+        callPipe.on('stream', function(remoteFeedStream) {
+            appendTerminal("Handshake verified! Syncing frame layout...");
+            
+            var parentFrame = document.getElementById('videoViewport').parentElement;
+            document.getElementById('videoViewport').remove();
+            
+            var cleanViewport = document.createElement('div');
+            cleanViewport.className = 'viewport';
+            
+            var unblockedVideoPlayer = document.createElement('video');
+            unblockedVideoPlayer.autoplay = true;
+            unblockedVideoPlayer.playsInline = true;
+            unblockedVideoPlayer.controls = true; 
+            unblockedVideoPlayer.style.width = "100%";
+            unblockedVideoPlayer.style.height = "100%";
+            unblockedVideoPlayer.srcObject = remoteFeedStream;
+            
+            cleanViewport.appendChild(unblockedVideoPlayer);
+            parentFrame.insertBefore(cleanViewport, parentFrame.firstChild);
+            
+            status.innerText = "Linked";
+            status.style.backgroundColor = "#5865f2";
+            appendTerminal("🟢 TUNNEL STABLE. Enjoy your video feed!");
+        });
+    });
 }
 </script>
 
