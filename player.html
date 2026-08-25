@@ -161,25 +161,25 @@
     <h2>🤖 Multi-Engine YouTube Aggregator Framework</h2>
     
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search across all custom platforms (e.g., seven nation army)..." onkeydown="if(event.key === 'Enter') startOmniSearch()">
-        <button onclick="startOmniSearch()">Search All</button>
+        <input type="text" id="searchInput" placeholder="Search keywords OR paste a regular YouTube URL..." onkeydown="if(event.key === 'Enter') handleInput()">
+        <button onclick="handleInput()">Search / Play</button>
     </div>
 
     <div class="main-layout">
         <!-- Player Canvas Box -->
         <div class="player-side" id="playerCanvas">
-            <div class="placeholder-text">Type a video topic and hit search to mount cross-network pipes.</div>
+            <div class="placeholder-text">Type a topic or paste a watch link to mount cross-network pipes.</div>
         </div>
         
         <!-- Results Array Container -->
         <div class="results-side" id="resultsCanvas">
-            <div class="placeholder-text" style="margin-top: 50px;">Awaiting network query inputs...</div>
+            <div class="placeholder-text" style="margin-top: 50px;">Awaiting query inputs...</div>
         </div>
     </div>
 </div>
 
 <script>
-// Every main alternative YouTube engine cluster available globally
+// Mirror cluster array nodes
 var invidiousNodes = [
     "https://nerdvpn.de",
     "https://no-logs.com",
@@ -196,76 +196,86 @@ var pipedNodes = [
     "https://garudalinux.org"
 ];
 
-var chosenPlaybackNode = "https://nerdvpn.de"; // Safe default player base
+var chosenPlaybackNode = "https://nerdvpn.de"; // Playback fallback default
 var searchActive = false;
 
-function startOmniSearch() {
-    var query = document.getElementById('searchInput').value.trim();
+function handleInput() {
+    var rawInput = document.getElementById('searchInput').value.trim();
+    var playerCanvas = document.getElementById('playerCanvas');
     var resultsCanvas = document.getElementById('resultsCanvas');
     
-    if (query === "") return;
+    if (rawInput === "") return;
     
-    resultsCanvas.innerHTML = '<div class="placeholder-text">📡 Querying Invidious, Piped, and Proxy clusters simultaneously...</div>';
-    searchActive = true;
+    var videoId = "";
     
-    var successfullyRendered = false;
+    // --- STEP 1: CHECK IF IT IS A PASTED LINK ---
+    if (rawInput.includes("://youtube.com") || rawInput.includes("youtu.be/") || rawInput.includes("embed/")) {
+        var longMatch = rawInput.match(/[?&]v=([^&#\s]+)/);
+        var shortMatch = rawInput.match(/youtu\.be\/([^?&#\s]+)/);
+        var embedMatch = rawInput.match(/embed\/([^?&#\s]+)/);
 
-    // --- PIPELINE 1: FETCH FROM INVIDIOUS ENGINE CLUSTER ---
-    invidiousNodes.forEach(function(baseNode) {
-        if (successfullyRendered) return;
-        
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", baseNode + "/api/v1/search?q=" + encodeURIComponent(query) + "&type=video", true);
-        xhr.timeout = 5000;
-        
-        xhr.onload = function() {
-            if (xhr.status >= 200 && xhr.status < 400 && searchActive && !successfullyRendered) {
-                var data = JSON.parse(xhr.responseText);
-                if (data && data.length > 0) {
+        if (longMatch) videoId = longMatch[1];
+        else if (shortMatch) videoId = shortMatch[1];
+        else if (embedMatch) videoId = embedMatch[1];
+    }
+    
+    // --- STEP 2: IF LINK MATCHED, PLAY IT IMMEDIATELY ---
+    if (videoId !== "") {
+        resultsCanvas.innerHTML = '<div class="placeholder-text">🔗 Normal link detected! Bypassing filters and mounting video player frame directly...</div>';
+        loadVideoPlayer(videoId);
+    } 
+    // --- STEP 3: IF TEXT MATCHED, RUN THE GLOBAL SEARCH ENGGINE ---
+    else {
+        resultsCanvas.innerHTML = '<div class="placeholder-text">📡 Querying Invidious, Piped, and Proxy clusters simultaneously...</div>';
+        searchActive = true;
+        var successfullyRendered = false;
+
+        invidiousNodes.forEach(function(baseNode) {
+            if (successfullyRendered) return;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", baseNode + "/api/v1/search?q=" + encodeURIComponent(rawInput) + "&type=video", true);
+            xhr.timeout = 5000;
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400 && searchActive && !successfullyRendered) {
                     successfullyRendered = true;
-                    chosenPlaybackNode = baseNode; // Match player to whichever node loaded fastest
-                    renderGlobalVideos(data, "invidious");
+                    chosenPlaybackNode = baseNode; 
+                    renderGlobalVideos(JSON.parse(xhr.responseText), "invidious");
                 }
-            }
-        };
-        xhr.send();
-    });
+            };
+            xhr.send();
+        });
 
-    // --- PIPELINE 2: FETCH FROM PIPED ENGINE CLUSTER ---
-    pipedNodes.forEach(function(baseNode) {
-        if (successfullyRendered) return;
-        
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", baseNode + "/search?q=" + encodeURIComponent(query) + "&filter=videos", true);
-        xhr.timeout = 5000;
-        
-        xhr.onload = function() {
-            if (xhr.status >= 200 && xhr.status < 400 && searchActive && !successfullyRendered) {
-                var data = JSON.parse(xhr.responseText);
-                if (data && data.streams && data.streams.length > 0) {
+        pipedNodes.forEach(function(baseNode) {
+            if (successfullyRendered) return;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", baseNode + "/search?q=" + encodeURIComponent(rawInput) + "&filter=videos", true);
+            xhr.timeout = 5000;
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400 && searchActive && !successfullyRendered) {
                     successfullyRendered = true;
-                    // Remaps standard Piped data architecture variables into our layout parameters
-                    var normalizedData = data.streams.map(function(item) {
-                        return {
-                            videoId: item.url.split("v=")[1] || item.url.split("/").pop(),
-                            title: item.title,
-                            author: item.uploaderName
-                        };
-                    });
-                    chosenPlaybackNode = "https://nerdvpn.de"; // Play in stable frame
-                    renderGlobalVideos(normalizedData, "piped cluster");
+                    var data = JSON.parse(xhr.responseText);
+                    if (data && data.streams && data.streams.length > 0) {
+                        var normalizedData = data.streams.map(function(item) {
+                            return {
+                                videoId: item.url.split("v=")[1] || item.url.split("/").pop(),
+                                title: item.title,
+                                author: item.uploaderName
+                            };
+                        });
+                        chosenPlaybackNode = "https://nerdvpn.de"; 
+                        renderGlobalVideos(normalizedData, "piped cluster");
+                    }
                 }
-            }
-        };
-        xhr.send();
-    });
+            };
+            xhr.send();
+        });
 
-    // Timeout Fallback Alert
-    setTimeout(function() {
-        if (!successfullyRendered && searchActive) {
-            resultsCanvas.innerHTML = '<div class="placeholder-text">⚠️ Core nodes busy. Click search again to send another burst query!</div>';
-        }
-    }, 6000);
+        setTimeout(function() {
+            if (!successfullyRendered && searchActive) {
+                resultsCanvas.innerHTML = '<div class="placeholder-text">⚠️ Core nodes busy. Click search again to send another burst query!</div>';
+            }
+        }, 6000);
+    }
 }
 
 function renderGlobalVideos(videoArray, sourceName) {
@@ -275,23 +285,9 @@ function renderGlobalVideos(videoArray, sourceName) {
 
     videoArray.forEach(function(video) {
         if (!video.videoId) return;
-        
         var item = document.createElement('div');
         item.className = 'video-item';
         item.onclick = function() { loadVideoPlayer(video.videoId); };
         
-        // Dynamic thumb routing maps around standard server images safely
         var thumbUrl = chosenPlaybackNode + "/vi/" + video.videoId + "/mqdefault.jpg";
-        
-        item.innerHTML = '<img src="' + thumbUrl + '" onerror="this.src=\'https://youtube.com' + video.videoId + '/mqdefault.jpg\'" alt="thumbnail">' +
-                         '<div class="video-info">' +
-                         '<div class="video-title">' + video.title + '</div>' +
-                         '<div class="video-author">' + video.author + '</div>' +
-                         '<span class="source-badge">' + sourceName + '</span>' +
-                         '</div>';
-        resultsCanvas.appendChild(item);
-    });
-}
-
-function loadVideoPlayer(id) {
-    var playerCanvas = document.getElementById('playerCanvas');
+        item.innerHTML = '<img src="' + thumbUrl + '" onerror="this.src=\'https://img.://youtube.comvi/' + video.videoId + '/mqdefault.jpg\'" alt="thumbnail">' +
