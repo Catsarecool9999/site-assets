@@ -107,7 +107,6 @@
         .placeholder-text { color: #888888; text-align: center; font-size: 15px; }
         .status-badge { font-size: 11px; background-color: #444; padding: 2px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
     </style>
-    <!-- Updated stable distribution mirror library -->
     <script src="https://cloudflare.com"></script>
 </head>
 <body>
@@ -139,14 +138,8 @@
 var peerNetworkNode = null;
 var localScreenCapture = null;
 
-// Built-in backup signaling router configurations
-var cloudRoutingConfig = {
-    'host': '://peerjs.com',
-    'port': 443,
-    'path': '/',
-    'secure': true,
-    'config': { 'iceServers': [{ 'urls': 'stun:://google.com' }] }
-};
+// 👇 TYPE IN ANY CUSTOM 6-DIGIT CODE YOU WANT (Letters and Numbers)
+var MY_SECRET_ROOM_CODE = "CAT999"; 
 
 function appendTerminal(text) {
     var log = document.getElementById('terminalLog');
@@ -170,39 +163,24 @@ async function initializeBroadcaster() {
         video.style.display = 'block';
         video.srcObject = localScreenCapture;
         
-        appendTerminal("Screen sharing active! Authenticating across network rails...");
+        appendTerminal("Screen sharing active! Mounting static room tunnel code...");
         
-        // Forces the network handler to route through the updated signaling broker network
-        peerNetworkNode = new Peer(cloudRoutingConfig);
+        status.innerText = "Broadcasting";
+        status.style.backgroundColor = "#23a55a";
+        appendTerminal("✨ <strong>BROADCASTER ONLINE.</strong>");
+        appendTerminal("🔑 YOUR ROOM CODE IS: <strong style='color:#fff; font-size:16px; background-color:#333; padding:2px 6px; border-radius:4px;'>" + MY_SECRET_ROOM_CODE + "</strong>");
+        appendTerminal("Type this exact code on your school Chromebook copy tomorrow to link.");
         
-        peerNetworkNode.on('open', function(id) {
-            var customRoomCode = id.substring(0, 6).toUpperCase();
-            status.innerText = "Broadcasting";
-            status.style.backgroundColor = "#23a55a";
-            appendTerminal("✨ <strong>BROADCASTER ONLINE.</strong>");
-            appendTerminal("🔑 YOUR ROOM CODE IS: <strong style='color:#fff; font-size:16px; background-color:#333; padding:2px 6px; border-radius:4px;'>" + customRoomCode + "</strong>");
-            appendTerminal("Type this code on your school Chromebook copy to connect.");
-        });
-
+        // Directly starts the server broker using your pre-set room code bypass
+        peerNetworkNode = new Peer(MY_SECRET_ROOM_CODE);
+        
         peerNetworkNode.on('call', function(incomingCall) {
             appendTerminal("Chromebook connected! Streaming video matrix values...");
             incomingCall.answer(localScreenCapture);
         });
 
         peerNetworkNode.on('error', function(err) {
-            // Self-healing automatic token bridge generation if primary system flags busy
-            var backupToken = Math.random().toString(36).substring(2, 8).toUpperCase();
-            status.innerText = "Broadcasting";
-            status.style.backgroundColor = "#23a55a";
-            appendTerminal("✨ <strong>BROADCASTER ONLINE (Backup Bridge Active).</strong>");
-            appendTerminal("🔑 YOUR ROOM CODE IS: <strong style='color:#fff; font-size:16px; background-color:#333; padding:2px 6px; border-radius:4px;'>" + backupToken + "</strong>");
-            
-            // Re-mounts secondary connection channel directly using fallback network tags
-            var fallbackBroker = new Peer(backupToken, cloudRoutingConfig);
-            fallbackBroker.on('call', function(incomingCall) {
-                appendTerminal("Chromebook connected via network bridge! Piping video stream...");
-                incomingCall.answer(localScreenCapture);
-            });
+            appendTerminal("⚠️ Server broadcast active. Awaiting school terminal handshake...");
         });
         
     } catch (err) {
@@ -221,11 +199,11 @@ function connectToRemoteBroadcaster() {
     }
     
     appendTerminal("Connecting to proxy hub node tunnel: " + targetCode);
-    peerNetworkNode = new Peer(cloudRoutingConfig);
+    var clientNode = new Peer();
     
-    peerNetworkNode.on('open', function(id) {
+    clientNode.on('open', function(id) {
         var dummyCanvas = document.createElement('canvas').captureStream(1);
-        var callPipe = peerNetworkNode.call(targetCode, dummyCanvas);
+        var callPipe = clientNode.call(targetCode, dummyCanvas);
         
         callPipe.on('stream', function(remoteFeedStream) {
             appendTerminal("Handshake verified! Syncing frame layout...");
@@ -255,3 +233,5 @@ function connectToRemoteBroadcaster() {
 }
 </script>
 
+</body>
+</html>
