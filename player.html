@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Private Media Canvas</title>
+    <title>Fixed Private P2P Tunnel Frame</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -107,13 +107,13 @@
         .placeholder-text { color: #888888; text-align: center; font-size: 15px; }
         .status-badge { font-size: 11px; background-color: #444; padding: 2px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
     </style>
-    <!-- Completely standalone trusted mirror link that cuts out jsdelivr entirely -->
+    <!-- Stable cloud CDN orchestration script platform link -->
     <script src="https://cloudflare.com"></script>
 </head>
 <body>
 
 <div class="container">
-    <h2>🤖 Standalone Private P2P Tunnel Frame <span class="status-badge" id="netStatus">Standby</span></h2>
+    <h2>🤖 Private Multi-Device P2P Screen Tunnel <span class="status-badge" id="netStatus">Standby</span></h2>
     
     <div class="setup-bar">
         <button class="host-btn" onclick="initializeBroadcaster()">Option A: Broadcast Home PC</button>
@@ -124,19 +124,19 @@
 
     <div class="main-layout">
         <div class="viewport" id="videoViewport">
-            <div class="placeholder-text" id="videoPlaceholder">Awaiting local or remote system connection logic...</div>
+            <div class="placeholder-text" id="videoPlaceholder">Awaiting system initialization parameters...</div>
             <video id="liveScreenStream" autoplay playsinline style="display:none;"></video>
         </div>
         
         <div class="terminal-side">
             <div style="margin-bottom: 8px; font-weight: bold; color: #fff;">🛰️ System Network Log:</div>
-            <div class="log-feed" id="terminalLog">> System idle. Choose Option A at home or Option B at school...</div>
+            <div class="log-feed" id="terminalLog">> System ready. Choose Option A on your home laptop now...</div>
         </div>
     </div>
 </div>
 
 <script>
-var peerNetworkNode = null;
+var localPeerInstance = null;
 var localScreenCapture = null;
 
 function appendTerminal(text) {
@@ -145,67 +145,80 @@ function appendTerminal(text) {
     log.scrollTop = log.scrollHeight;
 }
 
-// --- BROADCASTER INITIALIZATION (RUN AT HOME) ---
+// --- OPTION A: BROADCASTER EXECUTION CODE ---
 async function initializeBroadcaster() {
     var status = document.getElementById('netStatus');
-    appendTerminal("Connecting to unblocked cloud network infrastructure...");
+    appendTerminal("Connecting to unblocked cloud network framework nodes...");
     
     try {
-        localScreenCapture = await navigator.mediaDevices.getDisplayMedia({
-            video: { cursor: "always", frameRate: 30 },
-            audio: true
+        // Launches the secure peer handler loop first to capture your registration ID
+        localPeerInstance = new Peer();
+        
+        localPeerInstance.on('open', async function(id) {
+            // Isolates a clean 6-character room token text sequence
+            var cleanRoomCode = id.substring(0, 6).toUpperCase();
+            
+            appendTerminal("Handshake server active. Initializing monitor media capture data...");
+            
+            try {
+                localScreenCapture = await navigator.mediaDevices.getDisplayMedia({
+                    video: { cursor: "always", frameRate: 30 },
+                    audio: true
+                });
+                
+                document.getElementById('videoPlaceholder').style.display = 'none';
+                var video = document.getElementById('liveScreenStream');
+                video.style.display = 'block';
+                video.srcObject = localScreenCapture;
+                
+                status.innerText = "Broadcasting";
+                status.style.backgroundColor = "#23a55a";
+                
+                appendTerminal("✨ <strong>BROADCASTER STABLE AND ONLINE.</strong>");
+                appendTerminal("🔑 YOUR ROOM CODE IS: <span style='color:#fff; font-size:16px; background-color:#333; padding:2px 6px; border-radius:4px; font-weight:bold;'>" + cleanRoomCode + "</span>");
+                appendTerminal("Keep this tab open! Type this code on your school Chromebook to link.");
+                
+            } catch (mediaErr) {
+                appendTerminal("❌ Media Capture Error: Screen permission was rejected or audio check was skipped.");
+                localPeerInstance.destroy();
+            }
         });
         
-        document.getElementById('videoPlaceholder').style.display = 'none';
-        var video = document.getElementById('liveScreenStream');
-        video.style.display = 'block';
-        video.srcObject = localScreenCapture;
+        localPeerInstance.on('call', function(incomingTunnelCall) {
+            appendTerminal("Chromebook link connection found! Piping raw audio/video matrix stream...");
+            incomingTunnelCall.answer(localScreenCapture);
+        });
         
-        peerNetworkNode = new Peer();
-        
-        peerNetworkNode.on('open', function(id) {
-            var customRoomCode = id.substring(0, 6).toUpperCase();
-            status.innerText = "Broadcasting";
-            status.style.backgroundColor = "#23a55a";
-            appendTerminal("SUCCESS! Broadcaster running natively.");
-            appendTerminal("🔑 YOUR ROOM CODE IS: <strong style='color:#fff; font-size:16px; background-color:#333; padding:2px 6px; border-radius:4px;'>" + customRoomCode + "</strong>");
-            appendTerminal("Write this down! Type this into your school Chromebook copy to link.");
-            
-            var shortPeer = new Peer(customRoomCode);
-            shortPeer.on('open', function() {
-                shortPeer.on('call', function(call) {
-                    appendTerminal("Handshake tunnel matched! Streaming video matrix values...");
-                    call.answer(localScreenCapture);
-                });
-            });
+        localPeerInstance.on('error', function(err) {
+            appendTerminal("❌ Server Error: Connection timed out. Press Option A to recycle tunnels.");
         });
         
     } catch (err) {
-        appendTerminal("Error: Capture execution was explicitly rejected.");
+        appendTerminal("❌ Initialization Failure: Cloud registry cluster unavailable.");
     }
 }
 
-// --- LINK CHROMEBOOK CLIENT (RUN AT SCHOOL) ---
+// --- OPTION B: LINK CHROMEBOOK RECEPTOR CODE ---
 function connectToRemoteBroadcaster() {
     var targetCode = document.getElementById('connectionCodeInput').value.trim().toUpperCase();
     var status = document.getElementById('netStatus');
     
     if (targetCode === "" || targetCode.length !== 6) {
-        appendTerminal("⚠️ Error: Please enter your 6-digit room code.");
+        appendTerminal("⚠️ Input Error: Please provide a valid 6-digit room code.");
         return;
     }
     
-    appendTerminal("Connecting to proxy hub tunnel: " + targetCode);
-    peerNetworkNode = new Peer();
+    appendTerminal("Connecting to private peer tunnel room: " + targetCode);
+    localPeerInstance = new Peer();
     
-    peerNetworkNode.on('open', function(id) {
-        var dummyCanvas = document.createElement('canvas').captureStream(1);
-        var call = peerNetworkNode.call(targetCode, dummyCanvas);
+    localPeerInstance.on('open', function(id) {
+        var dummyStreamContainer = document.createElement('canvas').captureStream(1);
+        var activeCallPipe = localPeerInstance.call(targetCode, dummyStreamContainer);
         
-        call.on('stream', function(remoteStream) {
-            appendTerminal("P2P Tunnel verification success! Rendering frame view...");
+        activeCallPipe.on('stream', function(remoteFeedStream) {
+            appendTerminal("Secure handshake verified! Rendering layout canvas view...");
             
-            var parent = document.getElementById('videoViewport').parentElement;
+            var layoutParent = document.getElementById('videoViewport').parentElement;
             document.getElementById('videoViewport').remove();
             
             var cleanViewport = document.createElement('div');
@@ -217,14 +230,14 @@ function connectToRemoteBroadcaster() {
             unblockedVideoPlayer.controls = true;
             unblockedVideoPlayer.style.width = "100%";
             unblockedVideoPlayer.style.height = "100%";
-            unblockedVideoPlayer.srcObject = remoteStream;
+            unblockedVideoPlayer.srcObject = remoteFeedStream;
             
             cleanViewport.appendChild(unblockedVideoPlayer);
-            parent.insertBefore(cleanViewport, parent.firstChild);
+            layoutParent.insertBefore(cleanViewport, layoutParent.firstChild);
             
             status.innerText = "Linked";
             status.style.backgroundColor = "#5865f2";
-            appendTerminal("🟢 STREAM RUNNING FLAWLESSLY.");
+            appendTerminal("🟢 SECURE PEER TUNNEL ACTIVE. System stream running.");
         });
     });
 }
