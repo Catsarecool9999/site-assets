@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offline Media Dashboard</title>
+    <title>Unblocked Local YouTube Player</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #1e1f22;
-            color: #dbdee1;
+            background-color: #1a1a1a;
+            color: #eeeeee;
             margin: 0;
             padding: 15px;
             display: flex;
@@ -20,57 +20,62 @@
             display: flex;
             flex-direction: column;
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             flex-grow: 1;
         }
         h2 {
             margin-top: 0;
-            color: #ffffff;
-            font-size: 20px;
+            color: #ff0000;
+            font-size: 24px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         .search-box {
             display: flex;
             gap: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         input[type="text"] {
             flex-grow: 1;
-            background-color: #313338;
-            border: 1px solid #111214;
-            border-radius: 4px;
-            padding: 10px;
-            color: #f2f3f5;
-            font-size: 15px;
+            background-color: #2d2d2d;
+            border: 1px solid #444444;
+            border-radius: 20px;
+            padding: 12px 20px;
+            color: #ffffff;
+            font-size: 16px;
             outline: none;
         }
-        input[type="text"]:focus {
-            border-color: #5865f2;
-        }
         button {
-            background-color: #5865f2;
+            background-color: #ff0000;
             color: white;
             border: none;
-            border-radius: 4px;
-            padding: 0 20px;
-            font-size: 14px;
-            font-weight: 500;
+            border-radius: 20px;
+            padding: 0 25px;
+            font-size: 15px;
+            font-weight: bold;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
-        .player-frame {
+        button:hover {
+            background-color: #cc0000;
+        }
+        .main-layout {
+            display: flex;
+            gap: 20px;
             flex-grow: 1;
-            background-color: #2b2d31;
-            border: 1px solid #111214;
+            height: 60vh;
+        }
+        .player-side {
+            flex: 2;
+            background-color: #000000;
             border-radius: 8px;
+            position: relative;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
-            overflow: hidden;
-            min-height: 350px;
         }
         iframe {
             width: 100%;
@@ -80,74 +85,127 @@
             top: 0;
             left: 0;
         }
-        .placeholder {
-            text-align: center;
-            color: #949ba4;
-            padding: 20px;
+        .results-side {
+            flex: 1;
+            background-color: #252525;
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        .status-tag {
-            font-size: 12px;
-            background-color: #23a55a;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 3px;
+        .video-item {
+            display: flex;
+            gap: 10px;
+            background-color: #333333;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        .video-item:hover {
+            background-color: #444444;
+        }
+        .video-item img {
+            width: 90px;
+            height: 68px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .video-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .video-title {
+            font-size: 13px;
             font-weight: bold;
+            color: #ffffff;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .video-author {
+            font-size: 11px;
+            color: #aaaaaa;
+            margin-top: 4px;
+        }
+        .placeholder-text {
+            color: #888888;
+            text-align: center;
+            font-size: 15px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🤖 Offline Sandbox Player <span class="status-tag">LOCAL RUNTIME</span></h2>
+    <h2>📺 Local YouTube Search Hub</h2>
     
     <div class="search-box">
-        <input type="text" id="queryInput" placeholder="Paste your standard YouTube link here..." onkeydown="if(event.key === 'Enter') processSearch()">
-        <button onclick="processSearch()">Extract & Play</button>
+        <input type="text" id="searchInput" placeholder="Search for real YouTube videos here..." onkeydown="if(event.key === 'Enter') executeSearch()">
+        <button onclick="executeSearch()">Search</button>
     </div>
 
-    <div class="player-frame" id="displayCanvas">
-        <div class="placeholder">
-            <p style="font-size: 18px; font-weight: bold; margin-bottom: 5px;">No Video Loaded</p>
-            <p style="margin: 0; font-size: 14px;">Paste any normal YouTube video address above. The local code will reconstruct it safely.</p>
+    <div class="main-layout">
+        <!-- Live Video Screen -->
+        <div class="player-side" id="playerCanvas">
+            <div class="placeholder-text" id="playerPlaceholder">Select a video from the search results to start playing.</div>
+        </div>
+        
+        <!-- Interactive Search Results Grid -->
+        <div class="results-side" id="resultsCanvas">
+            <div class="placeholder-text" style="margin-top: 50px;">Your search results will appear here.</div>
         </div>
     </div>
 </div>
 
 <script>
-function processSearch() {
-    var rawInput = document.getElementById('queryInput').value.trim();
-    var canvas = document.getElementById('displayCanvas');
+function executeSearch() {
+    var query = document.getElementById('searchInput').value.trim();
+    var resultsCanvas = document.getElementById('resultsCanvas');
     
-    if (rawInput === "") return;
+    if (query === "") return;
     
-    var videoId = "";
+    resultsCanvas.innerHTML = '<div class="placeholder-text">Searching YouTube database...</div>';
     
-    // Pure text character matching that avoids array structure typos completely
-    if (rawInput.includes("v=")) {
-        var marker = rawInput.split("v=")[1];
-        if (marker.includes("&")) {
-            videoId = marker.split("&")[0];
-        } else {
-            videoId = marker;
-        }
-    } else if (rawInput.includes("youtu.be/")) {
-        var marker = rawInput.split("youtu.be/")[1];
-        if (marker.includes("?")) {
-            videoId = marker.split("?")[0];
-        } else {
-            videoId = marker;
-        }
-    } else {
-        videoId = rawInput; 
-    }
+    // Connects directly to an open API node to safely fetch video data without triggering school filters
+    var apiSearchUrl = "https://nerdvpn.de" + encodeURIComponent(query) + "&type=video";
     
-    if (videoId !== "") {
-        // Points the stream container to a stable backup proxy embed frame
-        var unblockedIframeUrl = "https://nadeko.net" + videoId;
-        canvas.innerHTML = '<iframe src="' + unblockedIframeUrl + '" allowfullscreen></iframe>';
-    } else {
-        canvas.innerHTML = '<div class="placeholder"><p style="color:#f23f43;">❌ Invalid URL layout.</p></div>';
-    }
+    fetch(apiSearchUrl)
+        .then(response => response.json())
+        .then(data => {
+            resultsCanvas.innerHTML = "";
+            if (data && data.length > 0) {
+                data.forEach(video => {
+                    var item = document.createElement('div');
+                    item.className = 'video-item';
+                    item.onclick = function() { loadVideoPlayer(video.videoId); };
+                    
+                    item.innerHTML = `
+                        <img src="https://nerdvpn.de{video.videoId}/mqdefault.jpg" alt="thumbnail">
+                        <div class="video-info">
+                            <div class="video-title">${video.title}</div>
+                            <div class="video-author">${video.author}</div>
+                        </div>
+                    `;
+                    resultsCanvas.appendChild(item);
+                });
+            } else {
+                resultsCanvas.innerHTML = '<div class="placeholder-text">❌ No videos found. Try different keywords.</div>';
+            }
+        })
+        .catch(err => {
+            resultsCanvas.innerHTML = '<div class="placeholder-text">❌ Connection busy. Please try your search again.</div>';
+        });
+}
+
+function loadVideoPlayer(id) {
+    var playerCanvas = document.getElementById('playerCanvas');
+    // Loads the live video stream from an unblocked server frame layer
+    playerCanvas.innerHTML = '<iframe src="https://nerdvpn.de' + id + '" allowfullscreen></iframe>';
 }
 </script>
 
