@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unblocked Local YouTube Player</title>
+    <title>Global Sandbox YouTube Proxy</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #1a1a1a;
-            color: #eeeeee;
+            background-color: #0f0f0f;
+            color: #f1f1f1;
             margin: 0;
             padding: 15px;
             display: flex;
@@ -20,14 +20,14 @@
             display: flex;
             flex-direction: column;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             flex-grow: 1;
         }
         h2 {
             margin-top: 0;
             color: #ff0000;
-            font-size: 24px;
+            font-size: 22px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -39,43 +39,44 @@
         }
         input[type="text"] {
             flex-grow: 1;
-            background-color: #2d2d2d;
-            border: 1px solid #444444;
-            border-radius: 20px;
-            padding: 12px 20px;
+            background-color: #212121;
+            border: 1px solid #3c3c3c;
+            border-radius: 24px;
+            padding: 12px 24px;
             color: #ffffff;
             font-size: 16px;
             outline: none;
         }
+        input[type="text"]:focus {
+            border-color: #ff0000;
+        }
         button {
-            background-color: #ff0000;
+            background-color: #cc0000;
             color: white;
             border: none;
-            border-radius: 20px;
-            padding: 0 25px;
+            border-radius: 24px;
+            padding: 0 28px;
             font-size: 15px;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.2s;
         }
-        button:hover {
-            background-color: #cc0000;
-        }
+        button:hover { background-color: #ff0000; }
         .main-layout {
             display: flex;
             gap: 20px;
             flex-grow: 1;
-            height: 60vh;
+            height: 70vh;
         }
         .player-side {
             flex: 2;
             background-color: #000000;
-            border-radius: 8px;
+            border-radius: 12px;
             position: relative;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+            border: 1px solid #212121;
         }
         iframe {
             width: 100%;
@@ -87,36 +88,39 @@
         }
         .results-side {
             flex: 1;
-            background-color: #252525;
-            border-radius: 8px;
-            padding: 10px;
+            background-color: #1f1f1f;
+            border-radius: 12px;
+            padding: 15px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            border: 1px solid #212121;
         }
         .video-item {
             display: flex;
-            gap: 10px;
-            background-color: #333333;
-            padding: 8px;
-            border-radius: 6px;
+            gap: 12px;
+            background-color: #2d2d2d;
+            padding: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.1s;
+            transition: transform 0.1s, background-color 0.1s;
         }
         .video-item:hover {
-            background-color: #444444;
+            background-color: #3d3d3d;
+            transform: scale(1.02);
         }
         .video-item img {
-            width: 90px;
-            height: 68px;
+            width: 110px;
+            height: 75px;
             object-fit: cover;
-            border-radius: 4px;
+            border-radius: 6px;
+            background-color: #000000;
         }
         .video-info {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
         }
         .video-title {
             font-size: 13px;
@@ -126,88 +130,168 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            line-height: 1.4;
         }
         .video-author {
             font-size: 11px;
             color: #aaaaaa;
-            margin-top: 4px;
+            margin-top: 6px;
         }
         .placeholder-text {
             color: #888888;
             text-align: center;
             font-size: 15px;
+            width: 100%;
+        }
+        .source-badge {
+            font-size: 9px;
+            background-color: #444;
+            color: #fff;
+            padding: 1px 4px;
+            border-radius: 3px;
+            align-self: flex-start;
+            margin-top: 4px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📺 Local YouTube Search Hub</h2>
+    <h2>🤖 Multi-Engine YouTube Aggregator Framework</h2>
     
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search for real YouTube videos here..." onkeydown="if(event.key === 'Enter') executeSearch()">
-        <button onclick="executeSearch()">Search</button>
+        <input type="text" id="searchInput" placeholder="Search across all custom platforms (e.g., seven nation army)..." onkeydown="if(event.key === 'Enter') startOmniSearch()">
+        <button onclick="startOmniSearch()">Search All</button>
     </div>
 
     <div class="main-layout">
-        <!-- Live Video Screen -->
+        <!-- Player Canvas Box -->
         <div class="player-side" id="playerCanvas">
-            <div class="placeholder-text" id="playerPlaceholder">Select a video from the search results to start playing.</div>
+            <div class="placeholder-text">Type a video topic and hit search to mount cross-network pipes.</div>
         </div>
         
-        <!-- Interactive Search Results Grid -->
+        <!-- Results Array Container -->
         <div class="results-side" id="resultsCanvas">
-            <div class="placeholder-text" style="margin-top: 50px;">Your search results will appear here.</div>
+            <div class="placeholder-text" style="margin-top: 50px;">Awaiting network query inputs...</div>
         </div>
     </div>
 </div>
 
 <script>
-function executeSearch() {
+// Every main alternative YouTube engine cluster available globally
+var invidiousNodes = [
+    "https://nerdvpn.de",
+    "https://no-logs.com",
+    "https://melmac.space",
+    "https://tux.im",
+    "https://projectsegfau.lt",
+    "https://privacydev.net"
+];
+
+var pipedNodes = [
+    "https://kavin.rocks",
+    "https://moomoo.me",
+    "https://projectsegfau.lt",
+    "https://garudalinux.org"
+];
+
+var chosenPlaybackNode = "https://nerdvpn.de"; // Safe default player base
+var searchActive = false;
+
+function startOmniSearch() {
     var query = document.getElementById('searchInput').value.trim();
     var resultsCanvas = document.getElementById('resultsCanvas');
     
     if (query === "") return;
     
-    resultsCanvas.innerHTML = '<div class="placeholder-text">Searching YouTube database...</div>';
+    resultsCanvas.innerHTML = '<div class="placeholder-text">📡 Querying Invidious, Piped, and Proxy clusters simultaneously...</div>';
+    searchActive = true;
     
-    // Connects directly to an open API node to safely fetch video data without triggering school filters
-    var apiSearchUrl = "https://nerdvpn.de" + encodeURIComponent(query) + "&type=video";
-    
-    fetch(apiSearchUrl)
-        .then(response => response.json())
-        .then(data => {
-            resultsCanvas.innerHTML = "";
-            if (data && data.length > 0) {
-                data.forEach(video => {
-                    var item = document.createElement('div');
-                    item.className = 'video-item';
-                    item.onclick = function() { loadVideoPlayer(video.videoId); };
-                    
-                    item.innerHTML = `
-                        <img src="https://nerdvpn.de{video.videoId}/mqdefault.jpg" alt="thumbnail">
-                        <div class="video-info">
-                            <div class="video-title">${video.title}</div>
-                            <div class="video-author">${video.author}</div>
-                        </div>
-                    `;
-                    resultsCanvas.appendChild(item);
-                });
-            } else {
-                resultsCanvas.innerHTML = '<div class="placeholder-text">❌ No videos found. Try different keywords.</div>';
+    var successfullyRendered = false;
+
+    // --- PIPELINE 1: FETCH FROM INVIDIOUS ENGINE CLUSTER ---
+    invidiousNodes.forEach(function(baseNode) {
+        if (successfullyRendered) return;
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", baseNode + "/api/v1/search?q=" + encodeURIComponent(query) + "&type=video", true);
+        xhr.timeout = 5000;
+        
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 400 && searchActive && !successfullyRendered) {
+                var data = JSON.parse(xhr.responseText);
+                if (data && data.length > 0) {
+                    successfullyRendered = true;
+                    chosenPlaybackNode = baseNode; // Match player to whichever node loaded fastest
+                    renderGlobalVideos(data, "invidious");
+                }
             }
-        })
-        .catch(err => {
-            resultsCanvas.innerHTML = '<div class="placeholder-text">❌ Connection busy. Please try your search again.</div>';
-        });
+        };
+        xhr.send();
+    });
+
+    // --- PIPELINE 2: FETCH FROM PIPED ENGINE CLUSTER ---
+    pipedNodes.forEach(function(baseNode) {
+        if (successfullyRendered) return;
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", baseNode + "/search?q=" + encodeURIComponent(query) + "&filter=videos", true);
+        xhr.timeout = 5000;
+        
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 400 && searchActive && !successfullyRendered) {
+                var data = JSON.parse(xhr.responseText);
+                if (data && data.streams && data.streams.length > 0) {
+                    successfullyRendered = true;
+                    // Remaps standard Piped data architecture variables into our layout parameters
+                    var normalizedData = data.streams.map(function(item) {
+                        return {
+                            videoId: item.url.split("v=")[1] || item.url.split("/").pop(),
+                            title: item.title,
+                            author: item.uploaderName
+                        };
+                    });
+                    chosenPlaybackNode = "https://nerdvpn.de"; // Play in stable frame
+                    renderGlobalVideos(normalizedData, "piped cluster");
+                }
+            }
+        };
+        xhr.send();
+    });
+
+    // Timeout Fallback Alert
+    setTimeout(function() {
+        if (!successfullyRendered && searchActive) {
+            resultsCanvas.innerHTML = '<div class="placeholder-text">⚠️ Core nodes busy. Click search again to send another burst query!</div>';
+        }
+    }, 6000);
+}
+
+function renderGlobalVideos(videoArray, sourceName) {
+    var resultsCanvas = document.getElementById('resultsCanvas');
+    resultsCanvas.innerHTML = "";
+    searchActive = false;
+
+    videoArray.forEach(function(video) {
+        if (!video.videoId) return;
+        
+        var item = document.createElement('div');
+        item.className = 'video-item';
+        item.onclick = function() { loadVideoPlayer(video.videoId); };
+        
+        // Dynamic thumb routing maps around standard server images safely
+        var thumbUrl = chosenPlaybackNode + "/vi/" + video.videoId + "/mqdefault.jpg";
+        
+        item.innerHTML = '<img src="' + thumbUrl + '" onerror="this.src=\'https://youtube.com' + video.videoId + '/mqdefault.jpg\'" alt="thumbnail">' +
+                         '<div class="video-info">' +
+                         '<div class="video-title">' + video.title + '</div>' +
+                         '<div class="video-author">' + video.author + '</div>' +
+                         '<span class="source-badge">' + sourceName + '</span>' +
+                         '</div>';
+        resultsCanvas.appendChild(item);
+    });
 }
 
 function loadVideoPlayer(id) {
     var playerCanvas = document.getElementById('playerCanvas');
-    // Loads the live video stream from an unblocked server frame layer
-    playerCanvas.innerHTML = '<iframe src="https://nerdvpn.de' + id + '" allowfullscreen></iframe>';
-}
-</script>
-
-</body>
-</html>
