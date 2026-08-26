@@ -10,83 +10,12 @@
             background-color: #0f0f0f;
             color: #f1f1f1;
             margin: 0;
-            padding: 0;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             height: 100vh;
             box-sizing: border-box;
         }
-
-        /* --- SECURE GATE OVERLAY SCREEN --- */
-        #passwordGate {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #0f0f0f;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-        }
-        .gate-card {
-            background-color: #1f1f1f;
-            border: 1px solid #212121;
-            padding: 30px 40px;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .gate-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: #ff0000;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .gate-input {
-            background-color: #212121;
-            border: 1px solid #3c3c3c;
-            border-radius: 24px;
-            padding: 12px 24px;
-            color: #ffffff;
-            font-size: 16px;
-            outline: none;
-            width: 260px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        .gate-input:focus {
-            border-color: #ff0000;
-        }
-        .gate-btn {
-            background-color: #cc0000;
-            color: white;
-            border: none;
-            border-radius: 24px;
-            padding: 12px 30px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.2s;
-        }
-        .gate-btn:hover { background-color: #ff0000; }
-        .error-msg {
-            color: #f23f43;
-            font-size: 13px;
-            margin-top: 10px;
-            display: none;
-            font-weight: bold;
-        }
-
-        /* --- CORE APPLICATION DASHBOARD --- */
         .container {
             display: flex;
             flex-direction: column;
@@ -94,7 +23,6 @@
             max-width: 1200px;
             margin: 0 auto;
             flex-grow: 1;
-            padding: 15px;
         }
         h2 { margin-top: 0; color: #ff0000; font-size: 22px; display: flex; align-items: center; gap: 10px; }
         .setup-bar {
@@ -119,7 +47,7 @@
             align-items: center;
             gap: 6px;
         }
-        button.action-btn {
+        button {
             border: none;
             border-radius: 24px;
             padding: 10px 24px;
@@ -174,34 +102,42 @@
         .placeholder-text { color: #949ba4; text-align: center; font-size: 15px; }
         .status-badge { font-size: 11px; background-color: #444; padding: 2px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
     </style>
-    <!-- Built-in unblocked synchronization libraries -->
+    <script>
+        // --- HIGH LEVEL ENCRYPTION INTERCEPTOR LOOP ---
+        var MASTER_KEY = "Digger7756!";
+        
+        // This execution line locks the tab down before a single pixel of the page layout can draw
+        var userVerificationPrompt = prompt("ENTER MASTER PASSWORD:");
+        
+        if (userVerificationPrompt === MASTER_KEY) {
+            console.log("Vault authenticated. Releasing layout threads.");
+        } else {
+            // Immediate security execution wipe block
+            alert("❌ ACCESS DENIED: Terminating session profile threads.");
+            
+            // Hard close command. If security rules stop an immediate window.close(), it completely burns the page logic instead
+            window.close(); 
+            window.location.replace("about:blank");
+            document.documentElement.innerHTML = ""; 
+        }
+    </script>
     <script src="https://pubnub.com"></script>
 </head>
 <body>
 
-    <!-- 🔒 FRONT LOCK SCREEN OVERLAY -->
-    <div id="passwordGate">
-        <div class="gate-card">
-            <div class="gate-title">🔒 SECURED MEDIA NETWORK V1</div>
-            <input type="password" id="gatePassInput" class="gate-input" placeholder="Enter Master Vault Password..." onkeydown="if(event.key === 'Enter') checkVaultGate()">
-            <button class="gate-btn" onclick="checkVaultGate()">Decrypt Mainframe</button>
-            <div id="gateError" class="error-msg">❌ Access Denied: Invalid Security Passcode</div>
-        </div>
-    </div>
-
-    <!-- 🤖 HIDDEN MAIN APPLICATION CONTAINER -->
+    <!-- 🤖 VAULT ACCESS PLATFORM CONTAINER -->
     <div class="container">
         <h2>🤖 Vault Secured Private Tunnel <span class="status-badge" id="netStatus">LOCKED</span></h2>
         
         <div class="setup-bar">
-            <div class="vault-lock-indicator">🔒 AUTHENTICATED VAULT ACCESS DETECTED</div>
-            <button class="action-btn host-btn" onclick="initHost()">Option A: Broadcast Home PC</button>
-            <button class="action-btn client-btn" onclick="initChromebook()">Option B: Mount Chromebook Display</button>
+            <div class="vault-lock-indicator">🔒 HARDWARE SECURITY VERIFICATION CODES MATCHED</div>
+            <button class="host-btn" onclick="initHost()">Option A: Broadcast Home PC</button>
+            <button class="client-btn" onclick="initChromebook()">Option B: Mount Chromebook Display</button>
         </div>
 
         <div class="main-layout">
             <div class="viewport" id="videoViewport">
-                <div class="placeholder-text" id="videoPlaceholder">P2P channels standby. Initialize hardware streaming link layers...</div>
+                <div class="placeholder-text" id="videoPlaceholder">Access granted. Initialize hardware streaming link layers...</div>
                 <video id="liveScreenStream" autoplay playsinline style="display:none;"></video>
             </div>
             
@@ -217,24 +153,6 @@ var pubnub = null;
 var p2pPipe = null;
 var localStream = null;
 
-// HARDCODED ENCRYPTION ROUTING VAULT KEY
-var MY_SECRET_VAULT_PASSWORD = "Digger7756!"; 
-
-// --- OVERLAY GATE VALIDATION ---
-function checkVaultGate() {
-    var input = document.getElementById('gatePassInput').value.trim();
-    var gate = document.getElementById('passwordGate');
-    var error = document.getElementById('gateError');
-    
-    if (input === MY_SECRET_VAULT_PASSWORD) {
-        // Smoothly wipes the lock overlay completely out of the browser's view layout
-        gate.style.display = "none";
-    } else {
-        error.style.display = "block";
-        document.getElementById('gatePassInput').value = "";
-    }
-}
-
 function appendLog(text) {
     var log = document.getElementById('terminalLog');
     log.innerHTML += "<br>> " + text;
@@ -248,7 +166,7 @@ function startNetworkSync() {
         userId: 'dev-' + Math.random().toString(36).substring(2, 7)
     });
 
-    pubnub.subscribe({ channels: [MY_SECRET_VAULT_PASSWORD] });
+    pubnub.subscribe({ channels: [MASTER_KEY] });
 
     pubnub.addListener({
         message: async function(event) {
@@ -258,7 +176,7 @@ function startNetworkSync() {
                 await p2pPipe.setRemoteDescription(new RTCSessionDescription(msg.sdp));
                 var answer = await p2pPipe.createAnswer();
                 await p2pPipe.setLocalDescription(answer);
-                pubnub.publish({ channel: MY_SECRET_VAULT_PASSWORD, message: { type: "answer", sdp: p2pPipe.localDescription } });
+                pubnub.publish({ channel: MASTER_KEY, message: { type: "answer", sdp: p2pPipe.localDescription } });
             } else if (msg.type === "answer" && localStream) {
                 await p2pPipe.setRemoteDescription(new RTCSessionDescription(msg.sdp));
                 appendLog("🔒 SECURE TUNNEL VERIFIED AND ACTIVE!");
@@ -271,8 +189,61 @@ function startNetworkSync() {
     });
 }
 
-// --- OPTION A: RUN AT HOME ---
 async function initHost() {
     appendLog("Booting hardware video/audio extraction rails...");
     try {
         localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        document.getElementById('videoPlaceholder').style.display = 'none';
+        var video = document.getElementById('liveScreenStream');
+        video.style.display = 'block';
+        video.srcObject = localStream;
+
+        p2pPipe = new RTCPeerConnection({ iceServers: [{ urls: "stun:://google.com" }] });
+        localStream.getTracks().forEach(track => p2pPipe.addTrack(track, localStream));
+
+        p2pPipe.onicecandidate = e => {
+            if (e.candidate) pubnub.publish({ channel: MASTER_KEY, message: { type: "ice", candidate: e.candidate } });
+        };
+
+        startNetworkSync();
+        appendLog("🟢 BROADCASTER ONLINE. Secured under vault key ID: Digger7756!");
+    } catch(e) { appendLog("❌ Error: Broadcast authorization dropped by system."); }
+}
+
+function initChromebook() {
+    appendLog("Deploying connection receptor array across channel...");
+    p2pPipe = new RTCPeerConnection({ iceServers: [{ urls: "stun:://google.com" }] });
+
+    p2pPipe.ontrack = e => {
+        appendLog("🟢 P2P Handshake verified! Spinning up secure video layout layer...");
+        document.getElementById('videoViewport').style.display = 'none';
+        
+        var mainContainer = document.getElementById('videoViewport').parentElement;
+        document.getElementById('videoViewport').remove();
+        
+        var viewport = document.createElement('div');
+        viewport.className = 'viewport';
+        var vid = document.createElement('video');
+        vid.autoplay = true; vid.playsInline = true; vid.controls = true;
+        vid.style.width = "100%"; vid.style.height = "100%";
+        vid.srcObject = e.streams;
+        
+        viewport.appendChild(vid);
+        mainContainer.insertBefore(viewport, mainContainer.firstChild);
+    };
+
+    p2pPipe.onicecandidate = e => {
+        if (e.candidate) pubnub.publish({ channel: MASTER_KEY, message: { type: "ice", candidate: e.candidate } });
+    };
+
+    startNetworkSync();
+
+    p2pPipe.createOffer().then(async offer => {
+        await p2pPipe.setLocalDescription(offer);
+        pubnub.publish({ channel: MASTER_KEY, message: { type: "offer", sdp: p2pPipe.localDescription } });
+    });
+}
+</script>
+
+</body>
+</html>
