@@ -3,233 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Private Media Hub</title>
+    <title>Official Unblocked Video Hub</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #0f0f0f;
-            color: #f1f1f1;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1e1f22;
+            color: #dbdee1;
             margin: 0;
-            padding: 0;
-            height: 100vh;
+            padding: 15px;
             display: flex;
             flex-direction: column;
+            height: 100vh;
             box-sizing: border-box;
-            overflow: hidden;
         }
-
-        /* --- STABLE WHITE SCREEN PASSWORD GATE OVERLAY --- */
-        #gateWindow {
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
-            height: 100vh; 
-            background-color: #ffffff; 
-            color: #000000; 
-            z-index: 99999; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-        }
-        #gateWindow h1 {
-            font-size: 32px; 
-            font-weight: bold; 
-            margin-bottom: 10px; 
-            color: #000000;
-        }
-        #secureInputField {
-            padding: 12px; 
-            font-size: 18px; 
-            width: 300px; 
-            text-align: center; 
-            border: 2px solid #000000; 
-            border-radius: 4px; 
-            outline: none; 
-            background-color: #ffffff; 
-            color: #000000;
-        }
-        .unlock-btn {
-            margin-top: 15px; 
-            padding: 10px 24px; 
-            font-size: 16px; 
-            font-weight: bold; 
-            background-color: #000000; 
-            color: #ffffff; 
-            border: none; 
-            border-radius: 4px; 
-            cursor: pointer;
-        }
-
-        /* --- CORE APPLICATION DASHBOARD --- */
         .container {
             display: flex;
             flex-direction: column;
             width: 100%;
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
             flex-grow: 1;
-            padding: 15px;
-            box-sizing: border-box;
         }
-        h2 { margin-top: 0; color: #ff0000; font-size: 22px; display: flex; align-items: center; gap: 10px; }
-        .main-layout {
+        h2 {
+            margin-top: 0;
+            color: #ffffff;
+            font-size: 20px;
             display: flex;
-            gap: 20px;
-            flex-grow: 1;
-            height: 80vh;
-            margin-top: 10px;
+            align-items: center;
+            gap: 8px;
         }
-        .player-side {
-            flex: 2;
-            background-color: #000000;
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            background-color: #313338;
+            border: 1px solid #111214;
+            border-radius: 4px;
+            padding: 10px;
+            color: #f2f3f5;
+            font-size: 15px;
+            outline: none;
+        }
+        input[type="text"]:focus {
+            border-color: #5865f2;
+        }
+        button {
+            background-color: #5865f2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #4752c4;
+        }
+        .player-frame {
+            flex-grow: 1;
+            background-color: #2b2d31;
+            border: 1px solid #111214;
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 1px solid #212121;
+            position: relative;
+            overflow: hidden;
+            min-height: 350px;
         }
-        video {
+        iframe {
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            outline: none;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
-        .playlist-side {
-            flex: 1;
-            background-color: #1f1f1f;
-            border-radius: 12px;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            border: 1px solid #212121;
+        .placeholder {
+            text-align: center;
+            color: #949ba4;
+            padding: 20px;
         }
-        .playlist-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 8px;
-        }
-        .category-header {
+        .status-tag {
             font-size: 12px;
-            font-weight: 800;
-            color: #ff0000;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 10px;
-            margin-bottom: 2px;
-            padding-left: 4px;
-        }
-        .media-card {
-            background-color: #2d2d2d;
-            padding: 12px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
+            background-color: #5865f2;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
             font-weight: bold;
-            color: #dbdee1;
-            border-left: 4px solid #cc0000;
-            transition: background-color 0.15s, transform 0.1s;
-        }
-        .media-card:hover {
-            background-color: #3d3d3d;
-            transform: translateX(4px);
-        }
-        .media-card.active {
-            background-color: #3f4248;
-            border-left-color: #23a55a;
-            color: #fff;
         }
     </style>
 </head>
 <body>
 
-    <!-- 🔒 BROADCASTER HARDWARE LEVEL PASSWORD GATE LAYER -->
-    <div id="gateWindow">
-        <h1>enter password</h1>
-        <input type="password" id="secureInputField" placeholder="Type password here..." onkeydown="if(event.key==='Enter') verifyVaultAccess()">
-        <button class="unlock-btn" onclick="verifyVaultAccess()">Unlock</button>
+<div class="container">
+    <h2>🤖 Official YouTube Stream Framework <span class="status-tag">ACTIVE</span></h2>
+    
+    <div class="search-box">
+        <input type="text" id="queryInput" placeholder="Paste your standard YouTube link here..." onkeydown="if(event.key === 'Enter') processSearch()">
+        <button onclick="processSearch()">Load Player</button>
     </div>
 
-    <!-- 🤖 AUTOMATED MEDIA VAULT CORE INTERFACE -->
-    <div class="container">
-        <h2>🤖 Private Offline Media Vault</h2>
-
-        <div class="main-layout">
-            <div class="player-side">
-                <video id="mainframeVideoPlayer" controls autoplay></video>
-            </div>
-            
-            <div class="playlist-side">
-                <div class="playlist-title">📁 Authenticated Local Vault</div>
-                
-                <div class="category-header">✨ Cobblemon Joe</div>
-                <div class="media-card active" onclick="changeSource('joe1.mp4', this)">▶️ Joe Bart Video Clip 01</div>
-                <div class="media-card" onclick="changeSource('joe2.mp4', this)">▶️ Joe Bart Video Clip 02</div>
-                <div class="media-card" onclick="changeSource('joe3.mp4', this)">▶️ Joe Bart Video Clip 03</div>
-                <div class="media-card" onclick="changeSource('joe4.mp4', this)">▶️ Joe Bart Video Clip 04</div>
-                <div class="media-card" onclick="changeSource('joe5.mp4', this)">▶️ Joe Bart Video Clip 05</div>
-                <div class="media-card" onclick="changeSource('joe6.mp4', this)">▶️ Joe Bart Video Clip 06</div>
-                <div class="media-card" onclick="changeSource('joe7.mp4', this)">▶️ Joe Bart Video Clip 07</div>
-                <div class="media-card" onclick="changeSource('joe8.mp4', this)">▶️ Joe Bart Video Clip 08</div>
-                <div class="media-card" onclick="changeSource('joe9.mp4', this)">▶️ Joe Bart Video Clip 09</div>
-                <div class="media-card" onclick="changeSource('joe10.mp4', this)">▶️ Joe Bart Video Clip 10</div>
-                <div class="media-card" onclick="changeSource('joe11.mp4', this)">▶️ Joe Bart Video Clip 11</div>
-                <div class="media-card" onclick="changeSource('joe12.mp4', this)">▶️ Joe Bart Video Clip 12</div>
-                <div class="media-card" onclick="changeSource('joe13.mp4', this)">▶️ Joe Bart Video Clip 13</div>
-                <div class="media-card" onclick="changeSource('joe14.mp4', this)">▶️ Joe Bart Video Clip 14</div>
-                <div class="media-card" onclick="changeSource('joe15.mp4', this)">▶️ Joe Bart Video Clip 15</div>
-
-                <div class="category-header" style="color: #ffaa00; margin-top: 20px;">🍔 CaseOh Streams</div>
-                <div class="media-card" onclick="changeSource('case1.mp4', this)">▶️ CaseOh Stream Clip 01</div>
-                <div class="media-card" onclick="changeSource('case2.mp4', this)">▶️ CaseOh Stream Clip 02</div>
-                <div class="media-card" onclick="changeSource('case3.mp4', this)">▶️ CaseOh Stream Clip 03</div>
-                <div class="media-card" onclick="changeSource('case4.mp4', this)">▶️ CaseOh Stream Clip 04</div>
-                <div class="media-card" onclick="changeSource('case5.mp4', this)">▶️ CaseOh Stream Clip 05</div>
-            </div>
+    <div class="player-frame" id="displayCanvas">
+        <div class="placeholder">
+            <p style="font-size: 18px; font-weight: bold; margin-bottom: 5px;">No Video Loaded</p>
+            <p style="margin: 0; font-size: 14px;">Paste any normal YouTube video address above to open it natively without verification bugs.</p>
         </div>
     </div>
+</div>
 
 <script>
-var MASTER_KEY = "a";
-
-function verifyVaultAccess() {
-    var entry = document.getElementById('secureInputField').value.trim();
-    if (entry === MASTER_KEY) {
-        // Correct password completely hides the gate overlay box natively
-        document.getElementById('gateWindow').style.display = "none";
-        
-        // Starts playing the default video track automatically upon successful login
-        var player = document.getElementById('mainframeVideoPlayer');
-        player.src = 'joe1.mp4';
-        player.load();
-    } else {
-        window.close();
-        window.location.replace("about:blank");
-    }
-}
-
-function changeSource(videoFileName, element) {
-    var player = document.getElementById('mainframeVideoPlayer');
-    player.src = videoFileName;
-    player.load();
-    player.play();
+function processSearch() {
+    var rawInput = document.getElementById('queryInput').value.trim();
+    var canvas = document.getElementById('displayCanvas');
     
-    var cards = document.getElementsByClassName('media-card');
-    for (var i = 0; i < cards.length; i++) {
-        cards[i].classList.remove('active');
+    if (rawInput === "") return;
+    
+    var videoId = "";
+    
+    // Scrapes out the true video ID token from raw paste layout strings
+    if (rawInput.includes("v=")) {
+        var marker = rawInput.split("v=")[1];
+        var endCheck = marker.indexOf("&");
+        if (endCheck !== -1) {
+            videoId = marker.substring(0, endCheck);
+        } else {
+            videoId = marker;
+        }
+    } else if (rawInput.includes("youtu.be/")) {
+        var marker = rawInput.split("youtu.be/")[1];
+        var endCheck = marker.indexOf("?");
+        if (endCheck !== -1) {
+            videoId = marker.substring(0, endCheck);
+        } else {
+            videoId = marker;
+        }
+    } else {
+        videoId = rawInput; // Fallback assumes they pasted just the raw video ID letters
     }
-    element.classList.add('active');
+    
+    if (videoId !== "") {
+        // FORCES AN OFFICIAL YOUTUBE PLAYER EMBED LAYER THAT BYPASSES ERROR 153 SECURELY
+        canvas.innerHTML = '<iframe src="https://www.youtube.com/embed/' + videoId + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+    } else {
+        canvas.innerHTML = '<div class="placeholder"><p style="color:#f23f43;">❌ Invalid YouTube Link Format. Please check the address structure.</p></div>';
+    }
 }
 </script>
+
 </body>
 </html>
