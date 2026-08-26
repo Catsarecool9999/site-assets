@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Private Media Hub</title>
+    <!-- Stable cloud relay broker framework -->
+    <script src="https://pubnub.com"></script>
     <script>
-        var MASTER_KEY = "Digger7756!";
+        var MASTER_KEY = "a";
 
         // Enforces your strict white password gate layout on load
         document.write(`
@@ -57,47 +59,176 @@
             border: 1px solid #212121;
             align-items: center;
         }
+        button {
+            border: none;
+            border-radius: 24px;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+        }
+        button.host-btn { background-color: #23a55a; }
+        button.client-btn { background-color: #5865f2; }
         .main-layout {
             display: flex;
             gap: 20px;
             flex-grow: 1;
-            height: 75vh;
+            height: 70vh;
         }
         .viewport {
-            flex: 1;
+            flex: 2;
             background-color: #000000;
             border-radius: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
             border: 1px solid #212121;
-            position: relative;
             overflow: hidden;
         }
-        iframe { width: 100%; height: 100%; border: none; }
-        .status-badge { font-size: 11px; background-color: #23a55a; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+        #streamCanvasFrame {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #000;
+        }
+        .terminal-side {
+            flex: 1;
+            background-color: #1f1f1f;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #212121;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .log-feed {
+            flex-grow: 1;
+            background-color: #0f0f0f;
+            border-radius: 6px;
+            padding: 10px;
+            color: #23a55a;
+            overflow-y: auto;
+        }
+        .status-badge { font-size: 11px; background-color: #444; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>🤖 Private PC Stream Receiver <span class="status-badge">TUNNEL READY</span></h2>
+        <h2>🤖 Rapid-Frame Photo Stream Pipeline <span class="status-badge" id="netStatus">LOCKED</span></h2>
         
         <div class="setup-bar">
-            <div style="font-size: 14px; font-weight: bold; color: #aaa;">🛰️ Connection Strategy: Streaming via Unblocked Open-Source Proxy Content Rails</div>
+            <button class="host-btn" onclick="startPhotoBroadcaster()">Option A: Broadcast Home PC</button>
+            <button class="client-btn" onclick="startPhotoReceiver()">Option B: Mount Chromebook Display</button>
         </div>
 
         <div class="main-layout">
-            <!-- 🖥️ UNBLOCKED OPEN DISPLAY MEDIA CONTAINER -->
-            <div class="viewport" id="videoViewport">
-                <!-- 
-                  👉 PASTE YOUR PRIVATE YOUTUBE LIVE ID BELOW:
-                  Change the 'YOUR_YOUTUBE_LIVE_ID' text token string with your actual 11-digit live stream ID code.
-                -->
-                <iframe src="https://zzls.xyz" allowfullscreen></iframe>
+            <!-- 🖥️ STATIC FLIP-BOOK IMAGE DISPLAY CONTAINER -->
+            <div class="viewport">
+                <img id="streamCanvasFrame" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="PC Feed Window">
+            </div>
+            
+            <div class="terminal-side">
+                <div style="margin-bottom: 8px; font-weight: bold; color: #fff;">🛰️ Local Engine Log:</div>
+                <div class="log-feed" id="terminalLog">> Vault authorized. Ready...</div>
             </div>
         </div>
     </div>
 
+    <!-- Hidden background processing chips for snapping snapshots -->
+    <video id="hiddenCaptureVideo" autoplay playsinline style="display:none;"></video>
+    <canvas id="hiddenProcessingCanvas" style="display:none;"></canvas>
+
+<script>
+var pubnub = null;
+var localScreenMedia = null;
+var intervalTimer = null;
+var CHANNEL_ID = "digger_photo_rail_stream";
+
+function appendLog(text) {
+    var log = document.getElementById('terminalLog');
+    log.innerHTML += "<br>> " + text;
+    log.scrollTop = log.scrollHeight;
+}
+
+function initPubNub() {
+    pubnub = new PubNub({
+        publishKey: 'pub-c-4b68e916-23cb-4da0-9d0b-78a08d245970',
+        subscribeKey: 'sub-c-1349f7e5-1a87-4be7-ba88-971fa08d4bd0',
+        userId: 'client-' + Math.random().toString(36).substring(2, 7)
+    });
+}
+
+// --- OPTION A: THE LAPTOP SCREEN SNAPSHOTTER (RUN AT HOME) ---
+async function startPhotoBroadcaster() {
+    appendLog("Requesting local hardware video layers...");
+    try {
+        localScreenMedia = await navigator.mediaDevices.getDisplayMedia({
+            video: { frameRate: 15 },
+            audio: false // Image rails cannot pipe live system sound natively
+        });
+        
+        var videoElement = document.getElementById('hiddenCaptureVideo');
+        videoElement.srcObject = localScreenMedia;
+        
+        initPubNub();
+        appendLog("🟢 BROADCASTER HOSTING ACTIVE.");
+        document.getElementById('netStatus').innerText = "STREAMING";
+        document.getElementById('netStatus').style.backgroundColor = "#23a55a";
+
+        var canvas = document.getElementById('hiddenProcessingCanvas');
+        var ctx = canvas.getContext('2d');
+
+        // Automatically captures a snapshot frame every 200 milliseconds (5 frames per second)
+        intervalTimer = setInterval(function() {
+            if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
+                canvas.width = videoElement.videoWidth / 1.5;  // Slightly scales resolution down for max speed
+                canvas.height = videoElement.videoHeight / 1.5;
+                
+                // Natively draws your computer screen directly onto an invisible graphic card chip
+                ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                
+                // Encodes that canvas frame into a flat text chunk string representing a compressed JPEG photo
+                var compressedJpegBase64 = canvas.toDataURL('image/jpeg', 0.5); // 0.5 sets high-speed data compression
+                
+                // Blasts that plain text photo string cleanly up to the unblocked database cloud
+                pubnub.publish({
+                    channel: CHANNEL_ID,
+                    message: { frame: compressedJpegBase64 }
+                });
+            }
+        }, 200);
+
+    } catch(err) {
+        appendLog("❌ Error: Screen sharing capture rejected.");
+    }
+}
+
+// --- OPTION B: THE CHROMEBOOK RECEPTOR CANVAS (RUN AT SCHOOL) ---
+function startPhotoReceiver() {
+    appendLog("Connecting to secure cloud data rails...");
+    initPubNub();
+    
+    pubnub.subscribe({ channels: [CHANNEL_ID] });
+    
+    appendLog("🟢 RECEIVER LISTENING. Waiting for incoming photo frames...");
+    document.getElementById('netStatus').innerText = "LISTENING";
+    document.getElementById('netStatus').style.backgroundColor = "#5865f2";
+
+    var displayImageNode = document.getElementById('streamCanvasFrame');
+
+    pubnub.addListener({
+        message: function(event) {
+            if (event.message && event.message.frame) {
+                // Instantly injects the incoming raw text string directly into the img src tag.
+                // The browser reads the replacement string and flashes the new photo up with zero lag!
+                displayImageNode.src = event.message.frame;
+            }
+        }
+    });
+}
+</script>
 </body>
 </html>
