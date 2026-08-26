@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Private Media Canvas</title>
+    <title>Secure Private Media Hub</title>
     <script>
-        // 👇 MAIN ACCESS ACCESS KEY
         var MASTER_KEY = "a";
 
-        // Enforces the strict white lock screen canvas on load
+        // Enforces your strict white password gate layout on load
         document.write(`
             <div id="gateWindow" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:#ffffff; color:#000000; z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif;">
                 <h1 style="font-size:32px; font-weight:bold; margin-bottom:10px; color:#000000;">enter password</h1>
@@ -29,7 +28,7 @@
     </script>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: #0f0f0f;
             color: #f1f1f1;
             margin: 0;
@@ -48,30 +47,13 @@
             flex-grow: 1;
         }
         h2 { margin-top: 0; color: #ff0000; font-size: 22px; display: flex; align-items: center; gap: 10px; }
-        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
-        input[type="text"] {
+        .main-layout {
+            display: flex;
+            gap: 20px;
             flex-grow: 1;
-            background-color: #212121;
-            border: 1px solid #3c3c3c;
-            border-radius: 24px;
-            padding: 12px 24px;
-            color: #ffffff;
-            font-size: 16px;
-            outline: none;
+            height: 80vh;
+            margin-top: 10px;
         }
-        input[type="text"]:focus { border-color: #ff0000; }
-        button.search-btn {
-            background-color: #cc0000;
-            color: white;
-            border: none;
-            border-radius: 24px;
-            padding: 0 28px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button.search-btn:hover { background-color: #ff0000; }
-        .main-layout { display: flex; gap: 20px; flex-grow: 1; height: 70vh; }
         .player-side {
             flex: 2;
             background-color: #000000;
@@ -83,8 +65,13 @@
             align-items: center;
             border: 1px solid #212121;
         }
-        iframe { width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0; }
-        .results-side {
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            outline: none;
+        }
+        .playlist-side {
             flex: 1;
             background-color: #1f1f1f;
             border-radius: 12px;
@@ -92,152 +79,113 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             border: 1px solid #212121;
         }
-        .video-item {
-            display: flex;
-            gap: 12px;
-            background-color: #2d2d2d;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.1s, background-color 0.1s;
-        }
-        .video-item:hover { background-color: #3d3d3d; transform: scale(1.02); }
-        .video-item img { width: 110px; height: 75px; object-fit: cover; border-radius: 6px; background-color: #000000; }
-        .video-info { display: flex; flex-direction: column; justify-content: flex-start; }
-        .video-title {
-            font-size: 13px;
+        .playlist-title {
+            font-size: 14px;
             font-weight: bold;
             color: #ffffff;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.4;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
         }
-        .video-author { font-size: 11px; color: #aaaaaa; margin-top: 6px; }
-        .placeholder-text { color: #888888; text-align: center; font-size: 15px; width: 100%; }
-        .source-badge { font-size: 9px; background-color: #444; color: #fff; padding: 1px 4px; border-radius: 3px; align-self: flex-start; margin-top: 4px; text-transform: uppercase; }
+        .category-header {
+            font-size: 12px;
+            font-weight: 800;
+            color: #ff0000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+            margin-bottom: 2px;
+            padding-left: 4px;
+        }
+        .media-card {
+            background-color: #2d2d2d;
+            padding: 12px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            color: #dbdee1;
+            border-left: 4px solid #cc0000;
+            transition: background-color 0.15s, transform 0.1s;
+        }
+        .media-card:hover {
+            background-color: #3d3d3d;
+            transform: translateX(4px);
+        }
+        .media-card.active {
+            background-color: #3f4248;
+            border-left-color: #23a55a;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🤖 Multi-Engine Proxy Aggregator Framework</h2>
-    
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search keywords or paste a watch link..." onkeydown="if(event.key === 'Enter') handleInput()">
-        <button class="search-btn" onclick="handleInput()">Search / Play</button>
-    </div>
+    <h2>🤖 Private Offline Joe Bart Vault</h2>
 
     <div class="main-layout">
-        <div class="player-side" id="playerCanvas">
-            <div class="placeholder-text">Enter your information above to mount unblocked media proxy tracks.</div>
+        <!-- CENTRAL NATIVE HARDWARE DISK PLAYER VIEWPORT -->
+        <div class="player-side">
+            <video id="mainframeVideoPlayer" controls autoplay></video>
         </div>
         
-        <div class="results-side" id="resultsCanvas">
-            <div class="placeholder-text" style="margin-top: 50px;">Awaiting search query inputs...</div>
+        <!-- SIDEBAR VIDEO TRACK MENU TRACKS RAIL -->
+        <div class="playlist-side">
+            <div class="playlist-title">📁 Authenticated Local Vault</div>
+            
+            <!-- NEW SECTION CATEGORY HEADER LABEL -->
+            <div class="category-header">✨ Cobblemon Joe</div>
+            
+            <!-- Links mapped directly to your custom filename variables -->
+            <div class="media-card active" onclick="changeSource('joe1.mp4', this)">▶️ Joe Bart Video Clip 01</div>
+            <div class="media-card" onclick="changeSource('joe2.mp4', this)">▶️ Joe Bart Video Clip 02</div>
+            <div class="media-card" onclick="changeSource('joe3.mp4', this)">▶️ Joe Bart Video Clip 03</div>
+            <div class="media-card" onclick="changeSource('joe4.mp4', this)">▶️ Joe Bart Video Clip 04</div>
+            <div class="media-card" onclick="changeSource('joe5.mp4', this)">▶️ Joe Bart Video Clip 05</div>
+            <div class="media-card" onclick="changeSource('joe6.mp4', this)">▶️ Joe Bart Video Clip 06</div>
+            <div class="media-card" onclick="changeSource('joe7.mp4', this)">▶️ Joe Bart Video Clip 07</div>
+            <div class="media-card" onclick="changeSource('joe8.mp4', this)">▶️ Joe Bart Video Clip 08</div>
+            <div class="media-card" onclick="changeSource('joe9.mp4', this)">▶️ Joe Bart Video Clip 09</div>
+            <div class="media-card" onclick="changeSource('joe10.mp4', this)">▶️ Joe Bart Video Clip 10</div>
+            <div class="media-card" onclick="changeSource('joe11.mp4', this)">▶️ Joe Bart Video Clip 11</div>
+            <div class="media-card" onclick="changeSource('joe12.mp4', this)">▶️ Joe Bart Video Clip 12</div>
+            <div class="media-card" onclick="changeSource('joe13.mp4', this)">▶️ Joe Bart Video Clip 13</div>
+            <div class="media-card" onclick="changeSource('joe14.mp4', this)">▶️ Joe Bart Video Clip 14</div>
+            <div class="media-card" onclick="changeSource('joe15.mp4', this)">▶️ Joe Bart Video Clip 15</div>
         </div>
     </div>
 </div>
 
 <script>
-// Highly stable alternative mirror routing nodes global array
-var invidiousNodes = [
-    "https://nerdvpn.de",
-    "https://no-logs.com",
-    "https://melmac.space",
-    "https://tux.im",
-    "https://projectsegfau.lt",
-    "https://privacydev.net"
-];
-
-var pipedNodes = [
-    "https://kavin.rocks",
-    "https://moomoo.me",
-    "https://projectsegfau.lt",
-    "https://garudalinux.org"
-];
-
-var chosenPlaybackNode = "https://nerdvpn.de"; 
-var searchActive = false;
-
-function handleInput() {
-    var rawInput = document.getElementById('searchInput').value.trim();
-    var playerCanvas = document.getElementById('playerCanvas');
-    var resultsCanvas = document.getElementById('resultsCanvas');
+function changeSource(videoFileName, element) {
+    var player = document.getElementById('mainframeVideoPlayer');
     
-    if (rawInput === "") return;
+    // Smooth input re-allocation tracks straight to your named mp4 assets
+    player.src = videoFileName;
+    player.load();
+    player.play();
     
-    var videoId = "";
-    
-    // --- SMART INTERCEPTOR LINK PROCESSING ---
-    if (rawInput.includes("v=")) {
-        videoId = rawInput.split("v=")[1].split("&")[0];
-    } else if (rawInput.includes("youtu.be/")) {
-        videoId = rawInput.split("youtu.be/")[1].split("?")[0];
-    } else if (rawInput.includes("embed/")) {
-        videoId = rawInput.split("embed/")[1].split("?")[0];
+    var cards = document.getElementsByClassName('media-card');
+    for (var i = 0; i < cards.length; i++) {
+        cards[i].classList.remove('active');
     }
-    
-    // --- MODE A: PASTED WATCH LINKS ---
-    if (videoId !== "") {
-        resultsCanvas.innerHTML = '<div class="placeholder-text">🔗 Link Intercepted! Injecting proxy media bypass player canvas...</div>';
-        loadVideoPlayer(videoId);
-    } 
-    // --- MODE B: WORD KEYWORD SEARCH BURST ---
-    else {
-        resultsCanvas.innerHTML = '<div class="placeholder-text">📡 Querying unblocked multi-server networks simultaneously...</div>';
-        searchActive = true;
-        var successfullyRendered = false;
-
-        invidiousNodes.forEach(function(baseNode) {
-            if (successfullyRendered) return;
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", baseNode + "/api/v1/search?q=" + encodeURIComponent(rawInput) + "&type=video", true);
-            xhr.timeout = 5000;
-            xhr.onload = function() {
-                if (xhr.status >= 200 && xhr.status < 400 && searchActive && !successfullyRendered) {
-                    successfullyRendered = true;
-                    chosenPlaybackNode = baseNode; 
-                    renderGlobalVideos(JSON.parse(xhr.responseText), "invidious proxy");
-                }
-            };
-            xhr.send();
-        });
-
-        pipedNodes.forEach(function(baseNode) {
-            if (successfullyRendered) return;
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", baseNode + "/search?q=" + encodeURIComponent(rawInput) + "&filter=videos", true);
-            xhr.timeout = 5000;
-            xhr.onload = function() {
-                if (xhr.status >= 200 && xhr.status < 400 && searchActive && !successfullyRendered) {
-                    successfullyRendered = true;
-                    var data = JSON.parse(xhr.responseText);
-                    if (data && data.streams && data.streams.length > 0) {
-                        var normalizedData = data.streams.map(function(item) {
-                            return {
-                                videoId: item.url.split("v=")[1] || item.url.split("/").pop(),
-                                title: item.title,
-                                author: item.uploaderName
-                            };
-                        });
-                        chosenPlaybackNode = "https://nerdvpn.de"; 
-                        renderGlobalVideos(normalizedData, "piped pipeline");
-                    }
-                }
-            };
-            xhr.send();
-        });
-
-        setTimeout(function() {
-            if (!successfullyRendered && searchActive) {
-                resultsCanvas.innerHTML = '<div class="placeholder-text">⚠️ Core proxy routing nodes busy. Tap search again to cycle circuits!</div>';
-            }
-        }, 6000);
-    }
+    element.classList.add('active');
 }
 
+// Drops the first video node path directly into cache upon clear of the password gate
+window.onload = function() {
+    var firstCard = document.querySelector('.media-card');
+    if (firstCard) {
+        document.getElementById('mainframeVideoPlayer').src = 'joe1.mp4';
+    }
+}
+</script>
+
+</body>
+</html>
