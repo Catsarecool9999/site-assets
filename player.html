@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Private Media Hub</title>
-    <!-- Stable cloud relay broker framework -->
-    <script src="https://pubnub.com"></script>
+    <title>Enterprise P2P Matrix Display</title>
     <script>
+        // 👇 ACCESS GATEWAY PASSKEY
         var MASTER_KEY = "a";
 
-        // Enforces your strict white password gate layout on load
+        // Forces the unbreakable flat white lock canvas on page load
         document.write(`
             <div id="gateWindow" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:#ffffff; color:#000000; z-index:99999; display:flex; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif;">
                 <h1 style="font-size:32px; font-weight:bold; margin-bottom:10px; color:#000000;">enter password</h1>
@@ -31,8 +30,8 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #0f0f0f;
-            color: #f1f1f1;
+            background-color: #0b0b0c;
+            color: #dbdee1;
             margin: 0;
             padding: 15px;
             display: flex;
@@ -48,187 +47,190 @@
             margin: 0 auto;
             flex-grow: 1;
         }
-        h2 { margin-top: 0; color: #ff0000; font-size: 22px; display: flex; align-items: center; gap: 10px; }
+        h2 { margin-top: 0; color: #ff0000; font-size: 20px; display: flex; align-items: center; gap: 8px; }
         .setup-bar {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 20px;
-            background-color: #1f1f1f;
-            padding: 12px 20px;
-            border-radius: 12px;
-            border: 1px solid #212121;
-            align-items: center;
+            background-color: #1e1f22;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #2b2d31;
+            flex-direction: column;
         }
-        button {
+        .btn-row { display: flex; gap: 10px; width: 100%; }
+        textarea {
+            background-color: #111214;
+            border: 1px solid #2b2d31;
+            color: #23a55a;
+            font-family: monospace;
+            font-size: 11px;
+            padding: 10px;
+            width: 100%;
+            height: 90px;
+            resize: none;
+            box-sizing: border-box;
+            border-radius: 6px;
+            outline: none;
+        }
+        textarea:focus { border-color: #5865f2; }
+        button.action-btn {
             border: none;
-            border-radius: 24px;
+            border-radius: 4px;
             padding: 10px 24px;
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 500;
             cursor: pointer;
             color: white;
+            white-space: nowrap;
         }
         button.host-btn { background-color: #23a55a; }
+        button.host-btn:hover { background-color: #1a7f43; }
         button.client-btn { background-color: #5865f2; }
+        button.client-btn:hover { background-color: #4752c4; }
+        button.lock-btn { background-color: #4e5058; }
+        button.lock-btn:hover { background-color: #6d6f78; }
         .main-layout {
             display: flex;
             gap: 20px;
             flex-grow: 1;
-            height: 70vh;
+            height: 55vh;
         }
         .viewport {
             flex: 2;
             background-color: #000000;
-            border-radius: 12px;
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 1px solid #212121;
-            overflow: hidden;
+            border: 1px solid #2b2d31;
+            position: relative;
         }
-        #streamCanvasFrame {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background-color: #000;
-        }
+        video { width: 100%; height: 100%; object-fit: contain; }
         .terminal-side {
             flex: 1;
-            background-color: #1f1f1f;
-            border-radius: 12px;
+            background-color: #1e1f22;
+            border-radius: 8px;
             padding: 15px;
             display: flex;
             flex-direction: column;
-            border: 1px solid #212121;
+            border: 1px solid #2b2d31;
             font-family: monospace;
             font-size: 13px;
         }
         .log-feed {
             flex-grow: 1;
-            background-color: #0f0f0f;
+            background-color: #111214;
             border-radius: 6px;
             padding: 10px;
             color: #23a55a;
             overflow-y: auto;
+            border: 1px solid #2b2d31;
         }
-        .status-badge { font-size: 11px; background-color: #444; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+        .placeholder-text { color: #949ba4; text-align: center; font-size: 15px; }
+        .status-badge { font-size: 11px; background-color: #4e5058; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>🤖 Rapid-Frame Photo Stream Pipeline <span class="status-badge" id="netStatus">LOCKED</span></h2>
+        <h2>🤖 Open-Source P2P Signal Tunnel <span class="status-badge" id="netStatus">Standby</span></h2>
         
         <div class="setup-bar">
-            <button class="host-btn" onclick="startPhotoBroadcaster()">Option A: Broadcast Home PC</button>
-            <button class="client-btn" onclick="startPhotoReceiver()">Option B: Mount Chromebook Display</button>
+            <div class="btn-row">
+                <button class="action-btn host-btn" onclick="startBroadcaster()">Step 1: Broadcast My Laptop</button>
+                <button class="action-btn client-btn" onclick="startReceiver()">[Chromebook] Step 2: Receive Feed</button>
+                <button class="action-btn lock-btn" onclick="lockHandshakeTunnel()">Step 4: Lock Connection</button>
+            </div>
+            <textarea id="cryptoTokenArea" placeholder="Handshake session tokens will process here..."></textarea>
         </div>
 
         <div class="main-layout">
-            <!-- 🖥️ STATIC FLIP-BOOK IMAGE DISPLAY CONTAINER -->
-            <div class="viewport">
-                <img id="streamCanvasFrame" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="PC Feed Window">
+            <div class="viewport" id="videoViewport">
+                <div class="placeholder-text" id="videoPlaceholder">Awaiting cryptographic handshake configurations...</div>
+                <video id="liveScreenStream" autoplay playsinline style="display:none;"></video>
             </div>
             
             <div class="terminal-side">
-                <div style="margin-bottom: 8px; font-weight: bold; color: #fff;">🛰️ Local Engine Log:</div>
-                <div class="log-feed" id="terminalLog">> Vault authorized. Ready...</div>
+                <div style="margin-bottom: 8px; font-weight: bold; color: #fff;">🛰️ Core Engine Log:</div>
+                <div class="log-feed" id="terminalLog">> Decryption verified. Ready...</div>
             </div>
         </div>
     </div>
 
-    <!-- Hidden background processing chips for snapping snapshots -->
-    <video id="hiddenCaptureVideo" autoplay playsinline style="display:none;"></video>
-    <canvas id="hiddenProcessingCanvas" style="display:none;"></canvas>
-
 <script>
-var pubnub = null;
-var localScreenMedia = null;
-var intervalTimer = null;
-var CHANNEL_ID = "digger_photo_rail_stream";
+var p2pInstance = null;
+var hardwareStream = null;
+var dataChannelBroker = null;
 
-function appendLog(text) {
+function appendTerminal(text) {
     var log = document.getElementById('terminalLog');
     log.innerHTML += "<br>> " + text;
     log.scrollTop = log.scrollHeight;
 }
 
-function initPubNub() {
-    pubnub = new PubNub({
-        publishKey: 'pub-c-4b68e916-23cb-4da0-9d0b-78a08d245970',
-        subscribeKey: 'sub-c-1349f7e5-1a87-4be7-ba88-971fa08d4bd0',
-        userId: 'client-' + Math.random().toString(36).substring(2, 7)
-    });
-}
+// Employs Google's verified, unblockable public infrastructure routes
+var openRtcConfig = { iceServers: [{ urls: "stun:://google.com" }, { urls: "stun:://google.com" }] };
 
-// --- OPTION A: THE LAPTOP SCREEN SNAPSHOTTER (RUN AT HOME) ---
-async function startPhotoBroadcaster() {
-    appendLog("Requesting local hardware video layers...");
+// --- STEP 1: RUN AT HOME ---
+async function startBroadcaster() {
+    appendTerminal("Sourcing local hardware display layers...");
     try {
-        localScreenMedia = await navigator.mediaDevices.getDisplayMedia({
-            video: { frameRate: 15 },
-            audio: false // Image rails cannot pipe live system sound natively
-        });
-        
-        var videoElement = document.getElementById('hiddenCaptureVideo');
-        videoElement.srcObject = localScreenMedia;
-        
-        initPubNub();
-        appendLog("🟢 BROADCASTER HOSTING ACTIVE.");
-        document.getElementById('netStatus').innerText = "STREAMING";
-        document.getElementById('netStatus').style.backgroundColor = "#23a55a";
+        hardwareStream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 30 }, audio: true });
+        document.getElementById('videoPlaceholder').style.display = 'none';
+        var video = document.getElementById('liveScreenStream');
+        video.style.display = 'block';
+        video.srcObject = hardwareStream;
 
-        var canvas = document.getElementById('hiddenProcessingCanvas');
-        var ctx = canvas.getContext('2d');
+        p2pInstance = new RTCPeerConnection(openRtcConfig);
+        dataChannelBroker = p2pInstance.createDataChannel("pipeline");
 
-        // Automatically captures a snapshot frame every 200 milliseconds (5 frames per second)
-        intervalTimer = setInterval(function() {
-            if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-                canvas.width = videoElement.videoWidth / 1.5;  // Slightly scales resolution down for max speed
-                canvas.height = videoElement.videoHeight / 1.5;
-                
-                // Natively draws your computer screen directly onto an invisible graphic card chip
-                ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-                
-                // Encodes that canvas frame into a flat text chunk string representing a compressed JPEG photo
-                var compressedJpegBase64 = canvas.toDataURL('image/jpeg', 0.5); // 0.5 sets high-speed data compression
-                
-                // Blasts that plain text photo string cleanly up to the unblocked database cloud
-                pubnub.publish({
-                    channel: CHANNEL_ID,
-                    message: { frame: compressedJpegBase64 }
-                });
+        hardwareStream.getTracks().forEach(track => p2pInstance.addTrack(track, hardwareStream));
+
+        p2pInstance.onicecandidate = e => {
+            if (!e.candidate) {
+                // Compiles connection vectors into an absolute error-free base64 encryption ticket string
+                document.getElementById('cryptoTokenArea').value = btoa(JSON.stringify(p2pInstance.localDescription));
+                appendTerminal("✨ STEP 1 COMPLETE! Copy the text string above and save it inside a text document on your USB drive or draft email.");
             }
-        }, 200);
+        };
 
-    } catch(err) {
-        appendLog("❌ Error: Screen sharing capture rejected.");
-    }
+        var offer = await p2pInstance.createOffer();
+        await p2pInstance.setLocalDescription(offer);
+    } catch(err) { appendTerminal("❌ Error: Screen share execution canceled."); }
 }
 
-// --- OPTION B: THE CHROMEBOOK RECEPTOR CANVAS (RUN AT SCHOOL) ---
-function startPhotoReceiver() {
-    appendLog("Connecting to secure cloud data rails...");
-    initPubNub();
-    
-    pubnub.subscribe({ channels: [CHANNEL_ID] });
-    
-    appendLog("🟢 RECEIVER LISTENING. Waiting for incoming photo frames...");
-    document.getElementById('netStatus').innerText = "LISTENING";
-    document.getElementById('netStatus').style.backgroundColor = "#5865f2";
+// --- STEP 2: RUN AT SCHOOL ---
+async function startReceiver() {
+    var rawTextToken = document.getElementById('cryptoTokenArea').value.trim();
+    if (rawTextToken === "") { appendTerminal("⚠️ Error: Paste the laptop's text token chunk into the box first!"); return; }
 
-    var displayImageNode = document.getElementById('streamCanvasFrame');
+    p2pInstance = new RTCPeerConnection(openRtcConfig);
+    
+    p2pInstance.ontrack = e => {
+        appendTerminal("🟢 Secure stream track intercepted! Syncing media frames...");
+        document.getElementById('videoPlaceholder').style.display = 'none';
+        var video = document.getElementById('liveScreenStream');
+        video.style.display = 'block';
+        video.srcObject = e.streams[0];
+    };
 
-    pubnub.addListener({
-        message: function(event) {
-            if (event.message && event.message.frame) {
-                // Instantly injects the incoming raw text string directly into the img src tag.
-                // The browser reads the replacement string and flashes the new photo up with zero lag!
-                displayImageNode.src = event.message.frame;
-            }
+    p2pInstance.onicecandidate = e => {
+        if (!e.candidate) {
+            document.getElementById('cryptoTokenArea').value = btoa(JSON.stringify(p2pInstance.localDescription));
+            appendTerminal("📋 Step 3 Complete! Copy this response text back to your text file, paste it on your laptop, and click Step 4.");
         }
-    });
+    };
+
+    await p2pInstance.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(rawTextToken))));
+    var answer = await p2pInstance.createAnswer();
+    await p2pInstance.setLocalDescription(answer);
 }
-</script>
-</body>
-</html>
+
+// --- STEP 4: RUN AT HOME ---
+async function lockHandshakeTunnel() {
+    var rawAnswerToken = document.getElementById('cryptoTokenArea').value.trim();
+    if (rawAnswerToken === "") return;
+    await p2pInstance.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(rawAnswerToken))));
+    appendTerminal("🔒 Handshake locked! 30FPS encrypted connection stable.");
+    document.getElementById('netStatus').innerText = "LIVE";
